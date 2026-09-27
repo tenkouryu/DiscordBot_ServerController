@@ -105,7 +105,7 @@ The `add`, `edit`, `set`, and `remove` commands require the Manage Roles permiss
 /server member list
 ```
 
-Exports the server member list as a CSV file.
+Exports the server member list as a CSV file. Large CSV files are returned as ZIP archives to reduce upload time.
 
 ### Channel commands
 

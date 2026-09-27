@@ -6,6 +6,8 @@ Discord.py で作成した Discord Bot です。メンバー・ロール・チ�
 
 ## セットアップ
 
+### コードを使用する場合
+
 1. Python 3.10 以降を用意します。
 2. discord.py をインストールします。
 
@@ -13,12 +15,11 @@ Discord.py で作成した Discord Bot です。メンバー・ロール・チ�
 pip install discord.py
 ```
 
-3. `Src/config/config.json` に Bot トークンと通知先チャンネル ID を設定します。
+3. `Src/config/config.json` に Bot トークンを設定します。
 
 ```json
 {
-	"BOT_TOKEN": "Botのトークン",
-	"REDIRECT_CHANNEL_ID": "通知先チャンネルのID"
+   "BOT_TOKEN": "Botのトークン"
 }
 ```
 
@@ -33,9 +34,23 @@ pip install discord.py
 python Src/bot_main.py
 ```
 
-または `run_bot.cmd` を実行します。
+### exeを使用する場合
 
-Bot トークンは公開せず、`Src/config/config.json` を Git にコミットしないでください。
+Pythonがインストールされていない環境では、`release`フォルダ内のexeを使用できます。
+
+1. `release/config/config.json` に Bot トークンを設定します。
+
+```json
+{
+   "BOT_TOKEN": "Botのトークン"
+}
+```
+
+2. `release/DiscordBot_Servercontroller.exe`を実行します。
+
+exe版ではPythonやdiscord.pyのインストールは不要です。処理結果のCSV・ZIPは`release/temp`に一時保存され、Discordへの送信後に削除されます。
+
+Bot トークンは公開せず、設定ファイルを Git にコミットしないでください。
 
 ## コマンド
 
@@ -131,7 +146,7 @@ CSV形式は [テンプレートファイル](#テンプレートファイル) �
 以下はサンプル機能です。運用環境の要件に合わせて、処理内容や通知先を変更・無効化してください。
 
 - ボイスチャンネルへ参加・退出すると、対象ボイスチャンネルのテキストチャットへ通知します。
-- 新規メンバー参加時は、`REDIRECT_CHANNEL_ID` で指定したチャンネルへ通知します。
+- 新規メンバー参加時は、参加ログを出力します。
 
 ### シナリオ進行機能
 
@@ -173,4 +188,4 @@ CSVテンプレートは `Src/templates` の用途別フォルダにあります
 - [Set応答フォルダ](../Src/templates/set/response/README.md): Setの結果CSVについて
 - [Get結果フォルダ](../Src/templates/get/result/README.md): Getの出力について
 
-応答・結果ファイルは実行ごとに各フォルダへ保存され、Discordの添付ファイルとしても返信されます。生成ファイルはサーバーデータを含む場合があるためGit管理対象外です。
+応答・結果ファイルは`temp`フォルダへ一時保存され、Discordの添付ファイルとして返信した後に削除されます。

@@ -6,6 +6,8 @@ This is a Discord bot built with discord.py. It helps manage members, roles, cha
 
 ## Setup
 
+### Using the source code
+
 1. Prepare Python 3.10 or later.
 2. Install discord.py.
 
@@ -13,12 +15,11 @@ This is a Discord bot built with discord.py. It helps manage members, roles, cha
 pip install discord.py
 ```
 
-3. Set the bot token and redirect channel ID in `Src/config/config.json`.
+3. Set the bot token in `Src/config/config.json`.
 
 ```json
 {
-  "BOT_TOKEN": "your bot token",
-  "REDIRECT_CHANNEL_ID": "notification channel ID"
+  "BOT_TOKEN": "your bot token"
 }
 ```
 
@@ -34,9 +35,23 @@ pip install discord.py
 python Src/bot_main.py
 ```
 
-Alternatively, run `run_bot.cmd`.
+### Using the exe
 
-Do not expose the bot token, and avoid committing `Src/config/config.json` to Git.
+If Python is not installed, use the exe in the `release` folder.
+
+1. Set the bot token in `release/config/config.json`.
+
+```json
+{
+  "BOT_TOKEN": "your bot token"
+}
+```
+
+2. Run `release/DiscordBot_Servercontroller.exe`.
+
+The exe version does not require Python or discord.py. Generated CSV and ZIP files are temporarily stored in `release/temp` and deleted after they are sent to Discord.
+
+Do not expose the bot token, and avoid committing the configuration file to Git.
 
 ## Commands
 
@@ -132,7 +147,7 @@ See `chat_template.csv` in the [Template files](#template-files) section for the
 These are sample features and can be modified or disabled depending on your production requirements.
 
 - Joining or leaving a voice channel sends a notification to that channel's text chat.
-- When a new member joins, a notification is sent to the channel configured in `REDIRECT_CHANNEL_ID`.
+- When a new member joins, the event is written to the bot log.
 
 ### Scenario commands
 
@@ -174,4 +189,4 @@ CSV templates are grouped by purpose under `Src/templates`. Edit the needed CSV 
 - [Set response folder](../Src/templates/set/response/README.md): Set result CSV behavior
 - [Get result folder](../Src/templates/get/result/README.md): Get output behavior
 
-Response and result files are saved in their respective folders and also sent as Discord attachments. Generated files are excluded from Git because they may contain server data.
+Response and result files are temporarily saved in `temp`, sent as Discord attachments, and then deleted.

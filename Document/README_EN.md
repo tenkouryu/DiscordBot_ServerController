@@ -190,3 +190,8 @@ CSV templates are grouped by purpose under `Src/templates`. Edit the needed CSV 
 - [Get result folder](../Src/templates/get/result/README.md): Get output behavior
 
 Response and result files are temporarily saved in `temp`, sent as Discord attachments, and then deleted.
+
+## Licenses
+
+- [Project license (MIT)](licenses/LICENSE)
+- [Third-party OSS licenses](licenses/THIRD_PARTY_LICENSES.txt)

@@ -193,4 +193,4 @@ CSVテンプレートは `Src/templates` の用途別フォルダにあります
 ## ライセンス
 
 - [プロジェクトライセンス（MIT）](licenses/LICENSE)
-- [第三者OSSライセンス一覧](licenses/THIRD_PARTY_LICENSES.txt)
+- [第三者OSSライセンス一覧](licenses/THIRD_PARTY_LICENSES.md)

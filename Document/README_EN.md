@@ -194,4 +194,4 @@ Response and result files are temporarily saved in `temp`, sent as Discord attac
 ## Licenses
 
 - [Project license (MIT)](licenses/LICENSE)
-- [Third-party OSS licenses](licenses/THIRD_PARTY_LICENSES.txt)
+- [Third-party OSS licenses](licenses/THIRD_PARTY_LICENSES.md)

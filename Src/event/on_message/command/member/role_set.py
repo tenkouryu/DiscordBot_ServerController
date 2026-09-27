@@ -4,7 +4,7 @@ import io
 import discord
 from function.security.permissions import can_manage_roles
 import function.discord.role.edit_roll as edit_roll
-from function.file.template_output_service import save_template_output
+from function.file.template_output_service import save_template_output, send_template_output
 
 """
     CSVによるメンバーロール設定コマンドを処理する。

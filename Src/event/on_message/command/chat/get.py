@@ -8,7 +8,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import discord
-from function.file.template_output_service import save_template_output
+from function.file.template_output_service import save_template_output, send_template_output
 
 from function.file.zip_service import compress_directory
 

@@ -189,3 +189,8 @@ CSVテンプレートは `Src/templates` の用途別フォルダにあります
 - [Get結果フォルダ](../Src/templates/get/result/README.md): Getの出力について
 
 応答・結果ファイルは`temp`フォルダへ一時保存され、Discordの添付ファイルとして返信した後に削除されます。
+
+## ライセンス
+
+- [プロジェクトライセンス（MIT）](licenses/LICENSE)
+- [第三者OSSライセンス一覧](licenses/THIRD_PARTY_LICENSES.txt)

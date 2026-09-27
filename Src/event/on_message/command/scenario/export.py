@@ -1,6 +1,6 @@
 import discord
 
-from function.file.template_output_service import save_template_output
+from function.file.template_output_service import save_template_output, send_template_output
 from function.scenario.scenario_service import export_scenario_csv
 
 """

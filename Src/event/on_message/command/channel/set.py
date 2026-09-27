@@ -4,7 +4,7 @@ import re
 
 import discord
 import function.discord.channel.edit_channel as edit_channel
-from function.file.template_output_service import save_template_output
+from function.file.template_output_service import save_template_output, send_template_output
 from function.security.permissions import can_manage_channels
 
 """

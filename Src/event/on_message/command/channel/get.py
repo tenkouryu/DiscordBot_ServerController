@@ -2,7 +2,7 @@ import csv
 import io
 
 import discord
-from function.file.template_output_service import save_template_output
+from function.file.template_output_service import save_template_output, send_template_output
 from function.security.permissions import can_manage_channels
 
 """

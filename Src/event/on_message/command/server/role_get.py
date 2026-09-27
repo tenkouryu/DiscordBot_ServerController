@@ -3,7 +3,10 @@ import csv
 import discord
 import function.discord.role.edit_roll as edit_roll
 import function.discord.message.send_message as send_message
-from function.file.template_output_service import create_template_output_path
+from function.file.template_output_service import (
+	create_template_output_path,
+	delete_template_output,
+)
 from function.security.permissions import can_manage_roles
 
 """
@@ -69,9 +72,12 @@ async def main(client: discord.Client, message: discord.Message) -> None:
 		f"server_role_get_{message.guild.id}",
 	)
 	export_roles_to_csv(message.guild, str(file_path))
-	await send_message.send_message_to_channel_with_file(
-		client,
-		message.channel.id,
-		"サーバーのロール一覧を送信します。",
-		str(file_path),
-	)
+	try:
+		await send_message.send_message_to_channel_with_file(
+			client,
+			message.channel.id,
+			"サーバーのロール一覧を送信します。",
+			str(file_path),
+		)
+	finally:
+		delete_template_output(file_path)

@@ -31,7 +31,8 @@ async def main(client: discord.Client, message: discord.Message) -> None:
         f'member_list_{message.guild.id}',
         output.getvalue().encode('utf-8-sig'),
     )
-    await message.channel.send(
+    await send_template_output(
+        message.channel,
         'メンバーリストを送信します。',
-        file=discord.File(result_path, filename=result_path.name),
+        result_path,
     )

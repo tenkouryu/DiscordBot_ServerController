@@ -12,8 +12,9 @@ from typing import Any
 
 import discord
 
+from function.file.path_service import application_root
 
-_SRC_ROOT = Path(__file__).resolve().parents[2]
+_SRC_ROOT = application_root()
 
 
 """

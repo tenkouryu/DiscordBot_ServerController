@@ -85,7 +85,8 @@ async def main(message: discord.Message) -> None:
         f"scenario_set_{message.guild.id}",
         result_csv,
     )
-    await message.channel.send(
+    await send_template_output(
+        message.channel,
         f"{registered_count}ステップ登録しました。結果CSVを添付します。",
-        file=discord.File(result_path, filename=result_path.name),
+        result_path,
     )

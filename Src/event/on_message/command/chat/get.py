@@ -346,10 +346,7 @@ async def main(message: discord.Message) -> None:
                 archive_path.read_bytes(),
                 suffix=".zip",
             )
-            await message.channel.send(
-                result,
-                file=discord.File(result_path, filename=result_path.name),
-            )
+            await send_template_output(message.channel, result, result_path)
         except (
             UnicodeDecodeError,
             discord.Forbidden,

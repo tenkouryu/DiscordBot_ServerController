@@ -31,7 +31,8 @@ async def main(message: discord.Message) -> None:
         f"scenario_export_{message.guild.id}",
         scenario_file.getvalue(),
     )
-    await message.channel.send(
+    await send_template_output(
+        message.channel,
         "登録済みシナリオのCSVです。",
-        file=discord.File(result_path, filename=result_path.name),
+        result_path,
     )

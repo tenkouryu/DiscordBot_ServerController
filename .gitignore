@@ -5,3 +5,9 @@ __pycache__/
 .venv/
 .vscode/settings.json
 bot.log
+.bot_launch.cmd
+run_bot.cmd
+Src/templates/set/response/*.csv
+Src/templates/get/result/*.csv
+Src/templates/get/result/*.zip
+build/

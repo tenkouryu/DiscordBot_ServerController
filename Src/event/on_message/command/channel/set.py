@@ -210,7 +210,8 @@ async def main(message: discord.Message) -> None:
         f"channel_set_{message.guild.id}",
         result_csv,
     )
-    await message.channel.send(
+    await send_template_output(
+        message.channel,
         f"{success_count}件のチャンネルを設定しました。結果CSVを添付します。",
-        file=discord.File(result_path, filename=result_path.name),
+        result_path,
     )

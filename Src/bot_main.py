@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 import discord
 from discord import app_commands
@@ -9,18 +8,18 @@ from event.on_reaction import on_reaction as on_reaction_event
 from event.on_member_join import on_member_join as on_member_join_event
 from event.on_voice_state_update import on_voice_state_update as on_voice_state_update_event
 from event.on_message.command.slash_commands import register_slash_commands
+from function.file.path_service import application_root
 from function.security.single_instance import single_instance
 
 
 #----------Botの設定はここ----------
 #Botの設定を読み込み
-PROJECT_ROOT = Path(__file__).resolve().parent
-CONFIG_PATH = PROJECT_ROOT / 'config' / 'config.json'
+PROJECT_ROOT = application_root()
+CONFIG_PATH = PROJECT_ROOT / "config" / "config.json"
 
 with CONFIG_PATH.open(encoding='utf-8-sig') as f:
     config = json.load(f)
 TOKEN = config['BOT_TOKEN']
-REDIRECT_CHANNEL_ID = config['REDIRECT_CHANNEL_ID']
 # 接続に必要なオブジェクトを生成
 intents_set = discord.Intents.default() 
 intents_set.message_content = True      #メッセージの内容を取得するために必要
@@ -58,7 +57,7 @@ async def on_reaction_add(
 """新規メンバー参加時に実行されるイベントハンドラ"""
 @client.event
 async def on_member_join(member: discord.Member) -> None:
-    await on_member_join_event.on_member_join_main(client, REDIRECT_CHANNEL_ID, member)
+    await on_member_join_event.on_member_join_main(client, member)
 
 """メンバーのボイスチャンネル出入り時に実行されるイベントハンドラ"""
 @client.event

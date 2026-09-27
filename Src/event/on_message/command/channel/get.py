@@ -58,7 +58,4 @@ async def main(message: discord.Message) -> None:
         f"channel_get_{message.guild.id}",
         export_channels_to_csv(message.guild),
     )
-    await message.channel.send(
-        "チャンネル一覧を送信します。",
-        file=discord.File(result_path, filename=result_path.name),
-    )
+    await send_template_output(message.channel, "チャンネル一覧を送信します。", result_path)

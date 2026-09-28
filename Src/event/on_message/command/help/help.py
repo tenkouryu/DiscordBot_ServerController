@@ -25,6 +25,7 @@ def get_command_help_text() -> str:
         "/server role add ロール名 - ロールを追加\n"
         "/server role edit ロール名 権限名 on|off - ロール権限を変更\n"
         "/server role edit ロール名 color #RRGGBB - ロール色を変更\n"
+        "/server role permissions - ロール権限名・説明・設定値をCSVで取得\n"
         "/server role get - ロール一覧をCSVで取得\n"
         "/server role set + CSVファイル - CSVからロール設定を更新\n"
         "/server role template - サーバーロールCSVテンプレート\n"

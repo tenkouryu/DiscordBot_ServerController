@@ -86,6 +86,7 @@ CSV形式は [テンプレートファイル](#テンプレートファイル) �
 /server role add ロール名
 /server role edit ロール名 権限名 on|off
 /server role edit ロール名 color #RRGGBB
+/server role permissions
 /server role get
 /server role set + CSVファイル
 /server role template
@@ -93,6 +94,8 @@ CSV形式は [テンプレートファイル](#テンプレートファイル) �
 ```
 
 CSV形式は [テンプレートファイル](#テンプレートファイル) の `server_role_template.csv` を参照してください。
+
+`/server role permissions` で、権限名・英語説明・日本語訳・設定可能な値（`on` / `off`）を記載したCSVを取得できます。
 
 `/server role get` が出力するCSVは `/server role set` に添付して再利用できます。`set` の結果CSVには `result` と `reason` 列が追加されます。
 

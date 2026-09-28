@@ -28,6 +28,7 @@ from .server import member_list as server_member_list
 from .server import role_add as server_role_add
 from .server import role_edit as server_role_edit
 from .server import role_get as server_role_get
+from .server import role_permissions as server_role_permissions
 from .server import role_remove as server_role_remove
 from .server import role_set as server_role_set
 from .server import role_template as server_role_template
@@ -147,6 +148,10 @@ def register_slash_commands(tree: app_commands.CommandTree[discord.Client]) -> N
     @server_role.command(name="edit", description="ロールの権限または色を変更")
     async def server_role_edit_command(interaction: discord.Interaction, role_name: str, setting: str, value: str) -> None:
         await _run(interaction, server_role_edit.main, f"/server_role_edit {role_name} {setting} {value}")
+
+    @server_role.command(name="permissions", description="ロール権限名と説明をCSVで取得")
+    async def server_role_permissions_command(interaction: discord.Interaction) -> None:
+        await _run(interaction, server_role_permissions.main, "/server_role_permissions")
 
     @server_role.command(name="get", description="サーバーロールをCSVで取得")
     async def server_role_get_command(interaction: discord.Interaction) -> None:

@@ -87,6 +87,7 @@ The `add`, `set`, and `remove` commands require the Manage Roles permission.
 /server role add role-name
 /server role edit role-name permission-name on|off
 /server role edit role-name color #RRGGBB
+/server role permissions
 /server role get
 /server role set + CSV-file
 /server role template
@@ -94,6 +95,8 @@ The `add`, `set`, and `remove` commands require the Manage Roles permission.
 ```
 
 See `server_role_template.csv` in the [Template files](#template-files) section for the CSV format.
+
+Use `/server role permissions` to download a CSV of permission names, English descriptions, Japanese translations, and allowed values (`on` / `off`).
 
 The CSV returned by `/server role get` can be attached to `/server role set`. The result CSV includes `result` and `reason` columns.
 

@@ -11,3 +11,5 @@ Src/templates/set/response/*.csv
 Src/templates/get/result/*.csv
 Src/templates/get/result/*.zip
 build/
+pytest.ini
+requirements-dev.txt

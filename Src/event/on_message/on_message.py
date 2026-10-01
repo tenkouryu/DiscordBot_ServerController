@@ -2,7 +2,6 @@ import discord
 import function.discord.message.send_message as send_message
 from function.scenario.scenario_service import (
     advance_scenario,
-    has_active_scenario,
     get_scenario_wait_type,
     resolve_scenario_mentions,
 )
@@ -24,7 +23,6 @@ async def on_message_main(
 
     if message.guild is not None:
         try:
-            active_scenario = has_active_scenario(message.guild.id)
             wait_type = get_scenario_wait_type(
                 message.guild.id,
                 message.channel.id,
@@ -33,9 +31,7 @@ async def on_message_main(
             await message.channel.send(f"台本を進行できませんでした: {error}")
             return
 
-        if active_scenario:
-            if wait_type is None:
-                return
+        if wait_type is not None:
             if wait_type != "reaction" and not message.content.startswith('/'):
                 try:
                     scenario_result = advance_scenario(

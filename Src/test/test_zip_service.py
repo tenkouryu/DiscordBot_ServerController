@@ -52,18 +52,3 @@ class ZipServiceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-    compress_directory(source, archive)
-    extract_zip(archive, destination)
-
-    assert (destination / "root.txt").read_text(encoding="utf-8") == "root"
-    assert (destination / "nested" / "child.txt").read_text(encoding="utf-8") == "child"
-
-
-def test_extract_zip_rejects_path_traversal(tmp_path):
-    archive = tmp_path / "unsafe.zip"
-    with zipfile.ZipFile(archive, "w") as archive_file:
-        archive_file.writestr("../outside.txt", "unsafe")
-
-    with pytest.raises(ValueError, match="安全でないZIP内パス"):
-        extract_zip(archive, tmp_path / "destination")

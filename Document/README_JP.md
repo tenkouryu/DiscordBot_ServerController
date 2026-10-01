@@ -34,6 +34,15 @@ pip install discord.py
 python Src/bot_main.py
 ```
 
+### テスト
+
+開発用依存関係をインストールして、プロジェクトルートからテストを実行します。
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python -m pytest
+```
+
 ### exeを使用する場合
 
 Pythonがインストールされていない環境では、`release`フォルダ内のexeを使用できます。

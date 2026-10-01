@@ -367,6 +367,9 @@ def get_scenario_reaction_examples(step: dict[str, Any]) -> list[str]:
 
 def resolve_scenario_mentions(text: str, guild: discord.Guild) -> str:
     """シナリオ内の@ユーザー名・@ロール名をDiscordメンションへ変換する。"""
+    if "@" not in text:
+        return text
+
     resolved_text = text
     roles = sorted(guild.roles, key=lambda role: len(role.name), reverse=True)
     members = sorted(guild.members, key=lambda member: len(member.display_name), reverse=True)

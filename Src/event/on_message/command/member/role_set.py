@@ -1,10 +1,13 @@
 import csv
 import io
+import re
 
 import discord
 from function.security.permissions import can_manage_roles
 import function.discord.role.edit_roll as edit_roll
 from function.file.template_output_service import save_template_output, send_template_output
+
+_ROLE_COLUMN_PATTERN = re.compile(r"ロール(\d+)\Z")
 
 """
     CSVによるメンバーロール設定コマンドを処理する。
@@ -35,6 +38,51 @@ def _find_member_by_username(
     return matches[0] if len(matches) == 1 else None
 
 
+def _find_member(
+    guild: discord.Guild,
+    user_id: str,
+    username: str,
+    display_name: str,
+) -> tuple[discord.Member | None, str | None]:
+    """ユーザーIDを優先し、未指定ならユーザー名、表示名の順に検索する。"""
+    if user_id:
+        if not user_id.isdecimal():
+            return None, f"ユーザーID「{user_id}」が正しくありません。"
+        numeric_user_id = int(user_id)
+        matches = [
+            member for member in guild.members if member.id == numeric_user_id
+        ]
+        if len(matches) == 1:
+            return matches[0], None
+        if not matches:
+            return None, f"ユーザーID「{user_id}」のメンバーが見つかりません。"
+        return None, f"ユーザーID「{user_id}」のメンバーを一意に特定できません。"
+
+    if username:
+        matches = [
+            member
+            for member in guild.members
+            if member.name.casefold() == username.casefold()
+        ]
+        if len(matches) == 1:
+            return matches[0], None
+        if len(matches) > 1:
+            return None, f"ユーザー名「{username}」のメンバーを一意に特定できません。"
+
+    if display_name:
+        matches = [
+            member
+            for member in guild.members
+            if member.display_name.casefold() == display_name.casefold()
+        ]
+        if len(matches) == 1:
+            return matches[0], None
+        if len(matches) > 1:
+            return None, f"表示名「{display_name}」のメンバーを一意に特定できません。"
+
+    return None, "ユーザーID、ユーザー名、表示名に一致するメンバーが見つかりません。"
+
+
 def _find_role(guild: discord.Guild, role_name: str) -> discord.Role | None:
     """変更可能なロールを名前から取得する。"""
     return next(
@@ -52,33 +100,44 @@ def _find_role(guild: discord.Guild, role_name: str) -> discord.Role | None:
 async def _execute_row(
     guild: discord.Guild,
     action: str,
+    user_id: str,
     username: str,
-    role_name: str,
+    display_name: str,
+    role_names: list[str],
 ) -> str:
     """CSV 1 行分のロール操作を実行する。"""
     if action not in ("追加", "削除"):
         return "失敗: 1列目は「追加」または「削除」を指定してください。"
-    if not username:
-        return "失敗: ユーザー名が空です。"
-    if not role_name:
+    role_names = list(dict.fromkeys(role_name for role_name in role_names if role_name))
+    if not role_names:
         return "失敗: ロール名が空です。"
 
-    member = _find_member_by_username(guild, username)
+    member, member_error = _find_member(guild, user_id, username, display_name)
     if member is None:
-        return f"失敗: ユーザー名「{username}」のメンバーが見つかりません。"
+        return f"失敗: {member_error}"
 
-    role = _find_role(guild, role_name)
+    if action == "削除":
+        missing_roles = [
+            role_name
+            for role_name in role_names
+            if _find_role(guild, role_name) is None
+        ]
+        if missing_roles:
+            return f"失敗: ロール「{missing_roles[0]}」が見つかりません。"
+
     try:
-        if action == "追加":
-            if role is None:
-                role = await edit_roll.add_role_to_server(guild, role_name)
-            await member.add_roles(role)
-            return "成功: ロールを追加しました。"
+        for role_name in role_names:
+            role = _find_role(guild, role_name)
+            if action == "追加":
+                if role is None:
+                    role = await edit_roll.add_role_to_server(guild, role_name)
+                await member.add_roles(role)
+                continue
 
-        if role is None:
-            return f"失敗: ロール「{role_name}」が見つかりません。"
-        await member.remove_roles(role)
-        return "成功: ロールを削除しました。"
+            if role is None:
+                return f"失敗: ロール「{role_name}」が見つかりません。"
+            await member.remove_roles(role)
+        return f"成功: ロールを{action}しました。"
     except (discord.Forbidden, discord.HTTPException):
         return "失敗: Discordの権限または通信エラーで操作できませんでした。"
     except ValueError as error:
@@ -94,11 +153,22 @@ async def update_member_roles_from_csv(
         raise ValueError("サーバーが指定されていません。")
 
     reader = csv.DictReader(io.StringIO(csv_text))
-    required_columns = {"追加/削除", "ユーザー名", "ロール"}
-    if not required_columns.issubset(reader.fieldnames or set()):
-        raise ValueError("CSVには「追加/削除」「ユーザー名」「ロール」列が必要です。")
+    fieldnames = reader.fieldnames or []
+    if len(fieldnames) != len(set(fieldnames)):
+        raise ValueError("CSVに重複した列名があります。")
+    if "追加/削除" not in fieldnames:
+        raise ValueError("CSVには「追加/削除」列が必要です。")
+    if not {"ユーザーID", "ユーザー名", "表示名"}.intersection(fieldnames):
+        raise ValueError("CSVには「ユーザーID」「ユーザー名」「表示名」のいずれかが必要です。")
+    role_columns = [
+        fieldname
+        for fieldname in fieldnames
+        if fieldname == "ロール" or _ROLE_COLUMN_PATTERN.fullmatch(fieldname)
+    ]
+    if not role_columns:
+        raise ValueError("CSVには「ロール」または「ロール1」などの列が必要です。")
 
-    fieldnames = list(reader.fieldnames or [])
+    fieldnames = list(fieldnames)
     if "result" not in fieldnames:
         fieldnames.append("result")
     if "reason" not in fieldnames:
@@ -111,9 +181,21 @@ async def update_member_roles_from_csv(
 
     for row in reader:
         action = row.get("追加/削除", "").strip()
+        user_id = (row.get("ユーザーID") or "").strip()
         username = row.get("ユーザー名", "").strip()
-        role_name = row.get("ロール", "").strip()
-        operation_result = await _execute_row(guild, action, username, role_name)
+        display_name = (row.get("表示名") or "").strip()
+        role_names = [
+            (row.get(column) or "").strip()
+            for column in role_columns
+        ]
+        operation_result = await _execute_row(
+            guild,
+            action,
+            user_id,
+            username,
+            display_name,
+            role_names,
+        )
         succeeded = operation_result.startswith("成功")
         result = "成功" if succeeded else "失敗"
         reason = operation_result.partition(":")[2].strip() if not succeeded else ""
@@ -132,7 +214,8 @@ async def main(message: discord.Message) -> None:
     if message.content.partition(" ")[2].strip() == "-h":
         await message.channel.send(
             "/member role set + CSVファイル\n"
-            "CSV形式: 追加/削除,ユーザー名,ロール\n"
+            "CSV形式: 追加/削除,ユーザーID,ユーザー名,表示名,ロール1,ロール2...\n"
+            "ユーザーIDが空の場合はユーザー名、表示名の順で検索します。\n"
             "処理結果を result、失敗理由を reason 列に追加したCSVを返信します。"
         )
         return

@@ -93,11 +93,11 @@ flowchart TD
 
 See `member_role_template.csv` in the [Template files](#template-files) section for the CSV format.
 
-`get` returns the roles of the member matching the Discord username. A mention can also be used. It currently replies with text, not CSV. The `ユーザー名` column in the `set` CSV also expects a Discord username; matching is case-insensitive.
+`get` returns the roles of the member matching the Discord username. A mention can also be used. It currently replies with text, not CSV. In the `set` CSV, `ユーザーID` takes priority; when blank, members are searched by `ユーザー名` and then `表示名`. CSVs in the previous format without an ID column remain supported.
 
-`set` returns the submitted CSV with a `result` column and a `reason` column for failures.
+Use multiple `ロールN` columns (such as `ロール1`, `ロール2`) to add or remove multiple roles in one row. The previous single `ロール` column remains supported. The result CSV includes `result` and `reason` columns.
 
-`update` accepts an edited CSV from `/server member list` and replaces each member's roles with the entries in `Role1`, `Role2`, etc., matched by the `Name` column. The result CSV includes `result` and `reason` columns. The default role and bot/integration-managed roles are preserved.
+`update` accepts an edited CSV from `/server member list` and replaces each member's roles with the entries in `Role1`, `Role2`, etc. It matches by `User ID` first; if that column is absent or blank, it searches by `Name` (Discord username), then `Display Name`. The result CSV includes `result` and `reason` columns. The default role and bot/integration-managed roles are preserved.
 
 The `add`, `set`, `update`, and `remove` commands require the Manage Roles permission.
 
@@ -128,7 +128,7 @@ The `add`, `edit`, `set`, and `remove` commands require the Manage Roles permiss
 /server member list
 ```
 
-Exports the server member list as a CSV file with English column headers (`Name`, `Display Name`, `Role1`, `Role2`, etc.) and each role in its own column. Large CSV files are returned as ZIP archives to reduce upload time.
+Exports the server member list as a CSV file with English column headers (`User ID`, `Name`, `Display Name`, `Role1`, `Role2`, etc.) and each role in its own column. Large CSV files are returned as ZIP archives to reduce upload time.
 
 ### Channel commands
 

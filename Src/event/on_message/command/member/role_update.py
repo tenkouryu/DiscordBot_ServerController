@@ -14,13 +14,57 @@ def _find_member_by_username(
     guild: discord.Guild,
     username: str,
 ) -> discord.Member | None:
-    """Discordユーザー名から対象メンバーを特定する。"""
+    """Discordユーザー名から一意のメンバーを特定する。"""
     matches = [
         member
         for member in guild.members
         if member.name.casefold() == username.casefold()
     ]
     return matches[0] if len(matches) == 1 else None
+
+
+def _find_member(
+    guild: discord.Guild,
+    user_id: str,
+    username: str,
+    display_name: str,
+) -> tuple[discord.Member | None, str | None]:
+    """ID優先で検索し、ID未指定ならユーザー名、表示名の順で照合する。"""
+    if user_id:
+        if not user_id.isdecimal():
+            return None, f"ユーザーID「{user_id}」が正しくありません。"
+        numeric_user_id = int(user_id)
+        matches = [
+            member for member in guild.members if member.id == numeric_user_id
+        ]
+        if len(matches) == 1:
+            return matches[0], None
+        if not matches:
+            return None, f"ユーザーID「{user_id}」のメンバーが見つかりません。"
+        return None, f"ユーザーID「{user_id}」のメンバーを一意に特定できません。"
+
+    if username:
+        member = _find_member_by_username(guild, username)
+        if member is not None:
+            return member, None
+        if any(
+            member.name.casefold() == username.casefold()
+            for member in guild.members
+        ):
+            return None, f"ユーザー名「{username}」のメンバーを一意に特定できません。"
+
+    if display_name:
+        matches = [
+            member
+            for member in guild.members
+            if member.display_name.casefold() == display_name.casefold()
+        ]
+        if len(matches) == 1:
+            return matches[0], None
+        if len(matches) > 1:
+            return None, f"表示名「{display_name}」のメンバーを一意に特定できません。"
+
+    return None, "ユーザーID、ユーザー名、表示名に一致するメンバーが見つかりません。"
 
 
 def _get_role_columns(fieldnames: list[str]) -> list[str]:
@@ -87,8 +131,8 @@ async def update_member_roles_from_csv(
     fieldnames = reader.fieldnames
     if not fieldnames or len(fieldnames) != len(set(fieldnames)):
         raise ValueError("CSVの列名がありません。または同じ列名が重複しています。")
-    if "Name" not in fieldnames:
-        raise ValueError("CSVには「Name」列が必要です。")
+    if not {"User ID", "Name", "Display Name"}.intersection(fieldnames):
+        raise ValueError("CSVには「User ID」「Name」「Display Name」のいずれかが必要です。")
     role_columns = _get_role_columns(fieldnames)
     if not role_columns:
         raise ValueError("CSVには「Role1」などのロール列が必要です。")
@@ -105,12 +149,17 @@ async def update_member_roles_from_csv(
     success_count = 0
 
     for row in reader:
+        user_id = (row.get("User ID") or "").strip()
         username = (row.get("Name") or "").strip()
-        member = _find_member_by_username(guild, username) if username else None
+        display_name = (row.get("Display Name") or "").strip()
+        member, member_error = _find_member(
+            guild,
+            user_id,
+            username,
+            display_name,
+        )
         if member is None:
-            reason = (
-                f"ユーザー名「{username}」のメンバーが見つからないか、一意に特定できません。"
-            )
+            reason = member_error
         else:
             requested_role_names = [
                 (row.get(column) or "").strip()
@@ -140,7 +189,8 @@ async def main(message: discord.Message) -> None:
     if message.content.partition(" ")[2].strip() == "-h":
         await message.channel.send(
             "/member role update + CSVファイル\n"
-            "Name、Role1、Role2...列を持つメンバー一覧CSVからロールを更新します。"
+            "User ID、Name、Display Name、Role1...列を持つメンバー一覧CSVからロールを更新します。\n"
+            "User IDが空の場合はName（ユーザー名）、Display Nameの順に検索します。"
         )
         return
 

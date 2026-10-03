@@ -16,6 +16,26 @@ def _compress_csv(csv_data: bytes) -> bytes:
         archive.writestr("server_member_list.csv", csv_data)
     return compressed.getvalue()
 
+
+def _build_member_list_csv(members: list[discord.Member]) -> bytes:
+    """メンバーと各メンバーのロールを個別のCSV列に出力する。"""
+    member_rows = [
+        (member.name, member.display_name, [role.name for role in member.roles])
+        for member in members
+    ]
+    max_role_count = max((len(roles) for _, _, roles in member_rows), default=0)
+
+    output = io.StringIO(newline='')
+    writer = csv.writer(output)
+    role_headers = [f'Role{index}' for index in range(1, max_role_count + 1)]
+    writer.writerow(['Name', 'Display Name', *role_headers])
+    for name, display_name, roles in member_rows:
+        empty_role_columns = [''] * (max_role_count - len(roles))
+        writer.writerow([name, display_name, *roles, *empty_role_columns])
+
+    return output.getvalue().encode('utf-8-sig')
+
+
 """
     サーバーメンバー一覧取得コマンドを処理する。
 
@@ -33,13 +53,7 @@ async def main(client: discord.Client, message: discord.Message) -> None:
 
     # メンバーのリストを取得する。
     members = message.guild.members
-    output = io.StringIO(newline='')
-    writer = csv.writer(output)
-    writer.writerow(['名前', '表示名', 'ロール'])
-    for member in members:
-        writer.writerow([member.name, member.display_name, ', '.join(role.name for role in member.roles)])
-
-    csv_data = output.getvalue().encode('utf-8-sig')
+    csv_data = _build_member_list_csv(members)
     if len(csv_data) >= _CSV_COMPRESSION_THRESHOLD:
         result_content = _compress_csv(csv_data)
         result_suffix = ".zip"

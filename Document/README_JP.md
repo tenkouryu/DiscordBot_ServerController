@@ -65,6 +65,23 @@ Bot トークンは公開せず、設定ファイルを Git にコミットし�
 
 コマンドはスラッシュコマンド形式で利用します。`/help` で利用可能なコマンド一覧を表示できます。
 
+```mermaid
+flowchart TD
+    A["コマンド"] --> B["共通<br/>/help"]
+    A --> C["メンバー"]
+    A --> D["サーバー"]
+    A --> E["チャンネル"]
+    A --> F["チャット添付ファイル"]
+    A --> G["シナリオ"]
+
+    C --> C1["ロール<br/>add / get / set / update<br/>template / remove"]
+    D --> D1["ロール<br/>add / edit / permissions / get<br/>set / template / remove"]
+    D --> D2["メンバー<br/>list"]
+    E --> E1["create / get / move<br/>set / template"]
+    F --> F1["get / template"]
+    G --> G1["template / set / list<br/>start / delete / export"]
+```
+
 ### 共通機能
 
 ```text
@@ -77,6 +94,7 @@ Bot トークンは公開せず、設定ファイルを Git にコミットし�
 /member role add @メンバー ロール名
 /member role get ユーザー名
 /member role set + CSVファイル
+/member role update + メンバー一覧CSV
 /member role template
 /member role remove @メンバー ロール名
 ```
@@ -87,7 +105,9 @@ CSV形式は [テンプレートファイル](#テンプレートファイル) �
 
 `set` は処理結果を `result` 列、失敗理由を `reason` 列に記録したCSVを返信します。
 
-`add`、`set`、`remove` には「ロールの管理」権限が必要です。
+`update` は `/server member list` のCSVを編集して添付すると、`Name` 列で識別した各メンバーのロールを `Role1`、`Role2` などの列の内容へ置き換えます。結果CSVには `result` と `reason` 列が追加されます。デフォルトロールとBot・連携サービス管理のロールは変更されません。
+
+`add`、`set`、`update`、`remove` には「ロールの管理」権限が必要です。
 
 ### サーバーロール機能
 

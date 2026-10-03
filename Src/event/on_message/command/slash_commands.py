@@ -18,6 +18,7 @@ from .member import role_get as member_role_get
 from .member import role_remove as member_role_remove
 from .member import role_set as member_role_set
 from .member import role_template as member_role_template
+from .member import role_update as member_role_update
 from .scenario import delete as scenario_delete
 from .scenario import export as scenario_export
 from .scenario import list as scenario_list
@@ -140,6 +141,10 @@ def register_slash_commands(tree: app_commands.CommandTree[discord.Client]) -> N
     @member_role.command(name="template", description="メンバーロールCSVテンプレート")
     async def member_role_template_command(interaction: discord.Interaction) -> None:
         await _run(interaction, member_role_template.main, "/member_role_template")
+
+    @member_role.command(name="update", description="メンバー一覧CSVからロールを更新")
+    async def member_role_update_command(interaction: discord.Interaction, file: discord.Attachment) -> None:
+        await _run(interaction, member_role_update.main, "/member_role_update", attachments=[file])
 
     @server_role.command(name="add", description="サーバーにロールを追加")
     async def server_role_add_command(interaction: discord.Interaction, role_name: str) -> None:

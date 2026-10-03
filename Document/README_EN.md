@@ -57,6 +57,23 @@ Do not expose the bot token, and avoid committing the configuration file to Git.
 
 Commands are used as slash commands. Use `/help` to display all available commands.
 
+```mermaid
+flowchart TD
+    A["Commands"] --> B["Common<br/>/help"]
+    A --> C["Member"]
+    A --> D["Server"]
+    A --> E["Channel"]
+    A --> F["Chat attachments"]
+    A --> G["Scenario"]
+
+    C --> C1["Roles<br/>add / get / set / update<br/>template / remove"]
+    D --> D1["Roles<br/>add / edit / permissions / get<br/>set / template / remove"]
+    D --> D2["Members<br/>list"]
+    E --> E1["create / get / move<br/>set / template"]
+    F --> F1["get / template"]
+    G --> G1["template / set / list<br/>start / delete / export"]
+```
+
 ### Common commands
 
 ```text
@@ -69,6 +86,7 @@ Commands are used as slash commands. Use `/help` to display all available comman
 /member role add @member role-name
 /member role get username
 /member role set + CSV-file
+/member role update + member-list CSV
 /member role template
 /member role remove @member role-name
 ```
@@ -79,7 +97,9 @@ See `member_role_template.csv` in the [Template files](#template-files) section 
 
 `set` returns the submitted CSV with a `result` column and a `reason` column for failures.
 
-The `add`, `set`, and `remove` commands require the Manage Roles permission.
+`update` accepts an edited CSV from `/server member list` and replaces each member's roles with the entries in `Role1`, `Role2`, etc., matched by the `Name` column. The result CSV includes `result` and `reason` columns. The default role and bot/integration-managed roles are preserved.
+
+The `add`, `set`, `update`, and `remove` commands require the Manage Roles permission.
 
 ### Server role commands
 

@@ -1,0 +1,4 @@
+scenario_id,step,instruction,completion_type,completion_value,response,branch_reaction_1,branch_step_1,branch_reaction_2,branch_step_2
+welcome,1,参加ありがとうございます。確認できたら任意のリアクションを押してください。,reaction,*,ありがとうございます。次の確認へ進みます。,👍,2,👎,1
+welcome,2,名前を確認します。確認できたら✅を押してください。,reaction,✅,名前を確認しました。最後の確認へ進みます.,,,,
+welcome,3,最後に🎉を押してください。,reaction,🎉,シナリオが完了しました.,,,,

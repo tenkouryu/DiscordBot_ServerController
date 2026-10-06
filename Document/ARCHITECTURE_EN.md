@@ -1,10 +1,12 @@
-# Application Structure Document
+﻿# Application Structure Document
 
 ## 1. Overview
 
 This Discord bot supports server operations, including member, role, and channel management, attachment retrieval, scenario progression, and event notifications. Source code and runtime data are under `Src/`; documentation is under `Document/`.
 
 The entry point is `Src/bot_main.py`. The root-level `run_bot.cmd` can also launch the bot.
+
+The scenario editor under `Src/tools/scenario_editor/` opens a scenario CSV or a folder of CSV files, lets users select scenarios by ID and filename from CSVs directly inside the selected folder, edits steps and branches in a GUI, and saves changes back to their original CSV files. Reaction completion values and branch reactions can be selected from a searchable Unicode emoji list.
 
 ## 2. Directory Layout
 
@@ -20,7 +22,9 @@ Src/
     get/input/              Get CSV inputs
     get/result/              Get result category
   test/                    tests
-  tools/scenario_viewer/   scenario review tool
+  tools/scenario_editor/   scenario editing GUI (tkinter)
+  tools/config_editor/     settings editor GUI (tkinter)
+  tools/template_editor/   template CSV editor GUI (tkinter)
 
 Document/
   README_JP.md / README_EN.md
@@ -49,7 +53,7 @@ Shared processing called by events and commands, including scenario management, 
 
 ### `Src/templates/` and `Src/tools/`
 
-CSV artifacts are grouped under `Src/templates/set/input/`, `set/response/`, `get/input/`, and `get/result/`. Set responses and Get results are generated at runtime, saved in their output folders, and sent as Discord attachments. Generated files are excluded from Git. `Src/tools/scenario_viewer/` is a utility for reviewing scenario CSV files.
+CSV artifacts are grouped under `Src/templates/set/input/`, `set/response/`, `get/input/`, and `get/result/`. Set responses and Get results are generated at runtime, saved in their output folders, and sent as Discord attachments. Generated files are excluded from Git. `Src/tools/scenario_editor/` is a utility for reviewing and editing scenario CSV files.
 
 ## 4. Command Flow
 

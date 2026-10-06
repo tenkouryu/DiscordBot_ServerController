@@ -2,13 +2,16 @@
 
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
 SECRET_HINTS = ("token", "key", "secret", "password")
 
 
 def default_config_path() -> Path:
-    """リポジトリの Src/config/config.json を返す。"""
+    """設定エディター用の既定設定ファイルを返す。"""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent.parent / "config" / "config.json"
     return Path(__file__).resolve().parents[2] / "config" / "config.json"
 
 

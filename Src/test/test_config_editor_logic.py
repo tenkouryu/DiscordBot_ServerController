@@ -1,9 +1,18 @@
 ﻿import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from tools.config_editor.config_logic import is_secret_key, load_config, save_config, text_to_value, value_to_text
+from tools.config_editor.config_logic import (
+    default_config_path,
+    is_secret_key,
+    load_config,
+    save_config,
+    text_to_value,
+    value_to_text,
+)
 
 
 class ConfigLogicTest(unittest.TestCase):
@@ -28,6 +37,13 @@ class ConfigLogicTest(unittest.TestCase):
         self.assertTrue(is_secret_key("BOT_TOKEN"))
         self.assertTrue(is_secret_key("encryption_key"))
         self.assertFalse(is_secret_key("name"))
+
+    def test_default_path_for_frozen_release_executable(self):
+        executable = Path("C:/release/tools/config_editor.exe")
+        with patch.object(sys, "frozen", True, create=True), patch.object(
+            sys, "executable", str(executable)
+        ):
+            self.assertEqual(default_config_path(), Path("C:/release/config/config.json"))
 
 
 if __name__ == "__main__":

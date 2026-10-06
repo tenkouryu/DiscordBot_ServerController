@@ -63,7 +63,7 @@ Bot トークンは公開せず、設定ファイルを Git にコミットし�
 
 ## 補助GUIツール
 
-補助ツールはPython標準ライブラリのTkinterを使ったGUIです。Python環境では、リポジトリのルートから次のコマンドで起動できます。
+補助ツールはPython標準ライブラリのTkinterを使ったGUIです。Python環境では、リポジトリのルートから次のコマンドで起動できます。Windowsでは設定エディターのexeも利用できます。
 
 ### 設定エディター
 
@@ -71,7 +71,7 @@ Bot トークンは公開せず、設定ファイルを Git にコミットし�
 python Src/tools/config_editor/config_editor.py
 ```
 
-Bot設定の確認・編集、項目の追加・削除ができます。既定では `Src/config/config.json` を開きます。別の設定ファイルを指定する場合は、コマンドの末尾にJSONファイルのパスを渡してください。トークンなどの秘密情報は画面上でマスクされます。保存した設定をBotに反映するにはBotの再起動が必要です。設定ファイルを公開したりGitにコミットしたりしないでください。
+Bot設定の確認・編集、項目の追加・削除ができます。Windowsでは [config_editor.exe](../release/tools/config_editor.exe) から起動でき、既定で `release/config/config.json` を開きます。Python版は既定で `Src/config/config.json` を開きます。別の設定ファイルを指定する場合は、exeまたはコマンドの末尾にJSONファイルのパスを渡してください。トークンなどの秘密情報は画面上でマスクされます。保存した設定をBotに反映するにはBotの再起動が必要です。設定ファイルを公開したりGitにコミットしたりしないでください。
 
 ### テンプレートエディター
 
@@ -79,7 +79,7 @@ Bot設定の確認・編集、項目の追加・削除ができます。既定�
 python Src/tools/template_editor/template_editor.py
 ```
 
-CSVテンプレートのセルをダブルクリックして編集できます。行・列の追加や削除、列名変更、上書き保存、別名保存に対応しています。既定では `Src/templates` のCSVとCSVを含むZIPを一覧表示します。Windowsでは [template_editor.exe](../Src/tools/template_editor/template_editor.exe) からも起動できます。
+CSVテンプレートのセルをダブルクリックして編集できます。行・列の追加や削除、列名変更、上書き保存、別名保存に対応しています。Python版は `Src/templates`、[template_editor.exe](../release/tools/template_editor.exe) は `release/tools/templates` のCSVとCSVを含むZIPを既定で一覧表示します。
 
 ### シナリオエディター
 
@@ -87,7 +87,7 @@ CSVテンプレートのセルをダブルクリックして編集できます�
 python Src/tools/scenario_editor/scenario_editor.py
 ```
 
-CSVファイルまたはCSVを含むフォルダを開き、シナリオ、ステップの指示・完了条件・返信、分岐を編集できます。フォルダを開いた場合は、CSVごとのシナリオをIDとファイル名で選択できます。完了条件がリアクションの場合や分岐リアクションは、検索できるUnicode絵文字一覧から選択できます。保存時は変更した元CSVへの上書き確認が表示されます。Windowsでは [scenario_editor.exe](../Src/tools/scenario_editor/scenario_editor.exe) からも起動できます。
+CSVファイルまたはCSVを含むフォルダを開き、シナリオ、ステップの指示・完了条件・返信、分岐を編集できます。フォルダを開いた場合は、CSVごとのシナリオをIDとファイル名で選択できます。完了条件がリアクションの場合や分岐リアクションは、検索できるUnicode絵文字一覧から選択できます。保存時は変更した元CSVへの上書き確認が表示されます。Windowsでは [scenario_editor.exe](../release/tools/scenario_editor.exe) からも起動できます。
 
 ## コマンド
 

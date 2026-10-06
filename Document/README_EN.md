@@ -53,6 +53,34 @@ The exe version does not require Python or discord.py. Generated CSV and ZIP fil
 
 Do not expose the bot token, and avoid committing the configuration file to Git.
 
+## Auxiliary GUI tools
+
+The helper tools use the Tkinter GUI included with Python. From the repository root, start them with:
+
+### Configuration editor
+
+```powershell
+python Src/tools/config_editor/config_editor.py
+```
+
+View and edit bot settings, and add or remove settings. By default, the editor opens `Src/config/config.json`. To edit another settings file, append its JSON path to the command. Secret values such as the bot token are masked in the UI. Restart the bot to apply saved settings. Never expose the settings file or commit it to Git.
+
+### Template editor
+
+```powershell
+python Src/tools/template_editor/template_editor.py
+```
+
+Double-click CSV cells to edit them. You can add or delete rows and columns, rename columns, save changes, or save to another file. By default, it lists CSV files and ZIP archives containing CSV files under `Src/templates`. On Windows, you can also start [template_editor.exe](../Src/tools/template_editor/template_editor.exe).
+
+### Scenario editor
+
+```powershell
+python Src/tools/scenario_editor/scenario_editor.py
+```
+
+Open a CSV file or a folder containing CSV files to edit scenarios, step instructions, completion conditions, responses, and branches. When opening a folder, select a scenario by its ID and filename. Reaction completion values and branch reactions can be selected from a searchable Unicode emoji list. Saving prompts before overwriting the changed original CSV files. On Windows, you can also start [scenario_editor.exe](../Src/tools/scenario_editor/scenario_editor.exe).
+
 ## Commands
 
 Commands are used as slash commands. Use `/help` to display all available commands.

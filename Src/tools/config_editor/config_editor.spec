@@ -3,7 +3,7 @@
 
 a = Analysis(
     ["config_editor.py"],
-    pathex=[SPECPATH],
+    pathex=[SPECPATH, ".."],
     binaries=[],
     datas=[],
     hiddenimports=["config_logic"],

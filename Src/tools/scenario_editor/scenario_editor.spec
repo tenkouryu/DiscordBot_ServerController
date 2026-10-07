@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['scenario_editor.py'],
-    pathex=[],
+    pathex=[".."],
     binaries=[],
     datas=[],
     hiddenimports=[],

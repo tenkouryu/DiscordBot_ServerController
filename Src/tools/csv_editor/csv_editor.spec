@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['template_editor.py'],
+    ["csv_editor.py"],
     pathex=[".."],
     binaries=[],
     datas=[],
-    hiddenimports=['template_logic'],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='template_editor',
+    name="csv_editor",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

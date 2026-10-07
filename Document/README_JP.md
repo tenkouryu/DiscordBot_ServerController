@@ -71,7 +71,7 @@ Bot トークンは公開せず、設定ファイルを Git にコミットし�
 python Src/tools/config_editor/config_editor.py
 ```
 
-Bot設定の確認・編集、項目の追加・削除ができます。Windowsでは [config_editor.exe](../release/tools/config_editor.exe) から起動でき、既定で `release/config/config.json` を開きます。Python版は既定で `Src/config/config.json` を開きます。別の設定ファイルを指定する場合は、exeまたはコマンドの末尾にJSONファイルのパスを渡してください。トークンなどの秘密情報は画面上でマスクされます。保存した設定をBotに反映するにはBotの再起動が必要です。設定ファイルを公開したりGitにコミットしたりしないでください。
+Bot設定の確認・編集、項目の追加・削除ができます。Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の「設定」タブから使え、既定で `release/config/config.json` を開きます。Python版は既定で `Src/config/config.json` を開きます。別の設定ファイルを指定する場合は、exeまたはコマンドの末尾にJSONファイルのパスを渡してください。トークンなどの秘密情報は画面上でマスクされます。保存した設定をBotに反映するにはBotの再起動が必要です。設定ファイルを公開したりGitにコミットしたりしないでください。
 
 ### テンプレートエディター
 
@@ -79,7 +79,43 @@ Bot設定の確認・編集、項目の追加・削除ができます。Windows�
 python Src/tools/template_editor/template_editor.py
 ```
 
-CSVテンプレートのセルをダブルクリックして編集できます。行・列の追加や削除、列名変更、上書き保存、別名保存に対応しています。Python版は `Src/templates`、[template_editor.exe](../release/tools/template_editor.exe) は `release/tools/templates` のCSVとCSVを含むZIPを既定で一覧表示します。
+CSVテンプレートのセルをダブルクリックして編集できます。行・列の追加や削除、列名変更、上書き保存、別名保存に対応しています。左側の一覧にはファイル名と種別（CSV/ZIP）が表示されます。Python版は `Src/templates`、[csv_editor.exe](../release/tools/csv_editor.exe) のテンプレートタブは `release/tools/templates` のCSVとCSVを含むZIPを既定で一覧表示します。
+
+### サーバーロールCSVエディター
+
+```powershell
+python Src/tools/server_role_editor/server_role_editor.py
+```
+
+サーバーロール設定CSVのロール行を専用画面で追加・削除し、ロール名・色・権限を編集できます。権限列は必要なものだけ追加・削除できます。既定では `Src/templates/set/input/server_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
+Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
+
+### メンバーロールCSVエディター
+
+```powershell
+python Src/tools/member_role_editor/member_role_editor.py
+```
+
+メンバーのロールCSVの行を専用画面で追加・削除し、ロール列を増減できます。`/member role set` 用（追加/削除, ユーザーID, ユーザー名, 表示名, ロール1…）と `/member role update` 用（User ID, Name, Display Name, Role1…）を列名から自動判別します。保存時に、操作・メンバー指定・ロール名・ユーザーIDの入力ミスを確認します。既定では `Src/templates/set/input/member_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
+Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
+
+### チャンネルCSVエディター
+
+```powershell
+python Src/tools/channel_editor/channel_editor.py
+```
+
+`/channel set` 用CSVの行を専用画面で追加・削除し、`role_N` 列（参加を許可するロール）と `user_N` 列（追加するユーザー）を増減できます。種類（`text` / `voice`）はプルダウンで選べ、保存時にチャンネル名と種類を確認します。既定では `Src/templates/set/input/channel_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
+Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の「チャンネル」タブから使えます。
+
+### 統合エディター
+
+```powershell
+python Src/tools/csv_editor/csv_editor.py
+```
+
+設定・テンプレート・サーバーロール・メンバーロール・チャンネル・シナリオの各エディターを1つのウィンドウのタブにまとめたアプリです。未保存の変更があるタブには `*` が付き、終了時に確認します。各エディターは従来どおり単体でも起動できます。
+Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) から起動できます。
 
 ### シナリオエディター
 
@@ -87,7 +123,7 @@ CSVテンプレートのセルをダブルクリックして編集できます�
 python Src/tools/scenario_editor/scenario_editor.py
 ```
 
-CSVファイルまたはCSVを含むフォルダを開き、シナリオ、ステップの指示・完了条件・返信、分岐を編集できます。フォルダを開いた場合は、CSVごとのシナリオをIDとファイル名で選択できます。完了条件がリアクションの場合や分岐リアクションは、検索できるUnicode絵文字一覧から選択できます。保存時は変更した元CSVへの上書き確認が表示されます。Windowsでは [scenario_editor.exe](../release/tools/scenario_editor.exe) からも起動できます。
+CSVファイルまたはCSVを含むフォルダを開き、シナリオ、ステップの指示・完了条件・返信、分岐を編集できます。フォルダを開いた場合は、CSVごとのシナリオをIDとファイル名で選択できます。完了条件がリアクションの場合や分岐リアクションは、検索できるUnicode絵文字一覧から選択できます。保存時は変更した元CSVへの上書き確認が表示されます。Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
 
 ## コマンド
 

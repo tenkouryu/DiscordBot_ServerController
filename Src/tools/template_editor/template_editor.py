@@ -16,9 +16,17 @@ else:
                                  normalize, save_table)
 
 
-class TemplateEditor(tk.Tk):
-    def __init__(self, root_dir: Path) -> None:
-        super().__init__()
+import sys as _sys
+
+_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+if _TOOLS_DIR not in _sys.path:
+    _sys.path.insert(0, _TOOLS_DIR)
+from common.window_base import EditorFrame  # noqa: E402
+
+
+class TemplateEditor(EditorFrame):
+    def __init__(self, root_dir: Path, master: tk.Misc | None = None) -> None:
+        super().__init__(master)
         self.title("テンプレートエディタ")
         self.geometry("960x520")
         self.root_dir = root_dir
@@ -30,9 +38,19 @@ class TemplateEditor(tk.Tk):
 
         left = ttk.Frame(self, padding=4)
         left.pack(side="left", fill="y")
-        self.files = tk.Listbox(left, width=34, exportselection=False)
-        self.files.pack(fill="y", expand=True)
-        self.files.bind("<<ListboxSelect>>", self.on_select)
+        file_list = ttk.Frame(left)
+        file_list.pack(fill="both", expand=True)
+        self.files = ttk.Treeview(file_list, columns=("file", "type"), show="headings",
+                                  selectmode="browse", height=20)
+        self.files.heading("file", text="ファイル")
+        self.files.heading("type", text="種別")
+        self.files.column("file", width=260, minwidth=140, stretch=True)
+        self.files.column("type", width=70, minwidth=60, stretch=False, anchor="center")
+        self.files.pack(side="left", fill="y", expand=True)
+        self.files.bind("<<TreeviewSelect>>", self.on_select)
+        files_scroll = ttk.Scrollbar(file_list, orient="vertical", command=self.files.yview)
+        files_scroll.pack(side="right", fill="y")
+        self.files.configure(yscrollcommand=files_scroll.set)
         ttk.Button(left, text="フォルダを開く...", command=self.open_folder).pack(fill="x", pady=2)
         ttk.Button(left, text="ファイルを開く...", command=self.open_other).pack(fill="x")
         ttk.Button(left, text="一覧を更新", command=self.refresh_list).pack(fill="x")
@@ -60,20 +78,23 @@ class TemplateEditor(tk.Tk):
 
     def refresh_list(self) -> None:
         self.paths = list_template_files(self.root_dir)
-        self.files.delete(0, "end")
-        for path in self.paths:
-            self.files.insert("end", str(path.relative_to(self.root_dir)))
+        self.files.delete(*self.files.get_children())
+        for index, path in enumerate(self.paths):
+            self.files.insert(
+                "", "end", iid=str(index),
+                values=(str(path.relative_to(self.root_dir)), path.suffix[1:].upper()),
+            )
         if not self.paths:
-            self.files.insert("end", "表示するファイルがありません")
-            self.files.itemconfig(0, foreground="gray")
+            self.files.insert("", "end", iid="empty", values=("表示するファイルがありません", ""))
 
     def on_select(self, _event: object) -> None:
-        selection = self.files.curselection()
+        selection = self.files.selection()
         if not self.paths:
-            self.files.selection_clear(0, "end")
+            if selection:
+                self.files.selection_remove(*selection)
             return
         if selection and self.confirm_discard():
-            self.load(self.paths[selection[0]])
+            self.load(self.paths[int(selection[0])])
 
     def open_folder(self) -> None:
         selected = filedialog.askdirectory(initialdir=self.root_dir, mustexist=True)
@@ -243,5 +264,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-

@@ -160,7 +160,11 @@ def register_slash_commands(tree: app_commands.CommandTree[discord.Client]) -> N
 
     @server_role.command(name="get", description="サーバーロールをCSVで取得")
     async def server_role_get_command(interaction: discord.Interaction) -> None:
-        await _run(interaction, server_role_get.main, "/server_role_get")
+        await _run(
+            interaction,
+            lambda message: server_role_get.main(interaction.client, message),
+            "/server_role_get",
+        )
 
     @server_role.command(name="set", description="CSVからサーバーロールを設定")
     async def server_role_set_command(interaction: discord.Interaction, file: discord.Attachment) -> None:

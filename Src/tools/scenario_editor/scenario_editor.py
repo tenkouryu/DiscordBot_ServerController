@@ -320,9 +320,17 @@ def save_scenario_csv(
             temporary_path.unlink()
 
 
-class ScenarioEditor(tk.Tk):
-    def __init__(self, csv_path: Path | None = None, scenario_id: str | None = None) -> None:
-        super().__init__()
+import sys as _sys
+
+_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+if _TOOLS_DIR not in _sys.path:
+    _sys.path.insert(0, _TOOLS_DIR)
+from common.window_base import EditorFrame  # noqa: E402
+
+
+class ScenarioEditor(EditorFrame):
+    def __init__(self, csv_path: Path | None = None, scenario_id: str | None = None, master: tk.Misc | None = None) -> None:
+        super().__init__(master)
         self.title("シナリオエディター")
         self.geometry("1000x680")
         self.minsize(760, 500)

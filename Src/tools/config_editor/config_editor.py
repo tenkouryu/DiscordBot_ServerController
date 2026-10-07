@@ -15,9 +15,17 @@ else:
                                text_to_value, value_to_text)
 
 
-class ConfigEditor(tk.Tk):
-    def __init__(self, path: Path) -> None:
-        super().__init__()
+import sys as _sys
+
+_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+if _TOOLS_DIR not in _sys.path:
+    _sys.path.insert(0, _TOOLS_DIR)
+from common.window_base import EditorFrame  # noqa: E402
+
+
+class ConfigEditor(EditorFrame):
+    def __init__(self, path: Path, master: tk.Misc | None = None) -> None:
+        super().__init__(master)
         self.title("設定エディタ")
         self.geometry("640x420")
         self.path = path

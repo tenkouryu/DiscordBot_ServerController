@@ -1,12 +1,12 @@
-# -*- mode: python ; coding: utf-8 -*-
+﻿# -*- mode: python ; coding: utf-8 -*-
 
 
 a = Analysis(
-    ['template_editor.py'],
+    ["channel_editor.py"],
     pathex=[".."],
     binaries=[],
     datas=[],
-    hiddenimports=['template_logic'],
+    hiddenimports=["channel_logic"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='template_editor',
+    name="channel_editor",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

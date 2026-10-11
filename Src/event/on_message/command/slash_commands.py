@@ -26,6 +26,7 @@ from .scenario import set as scenario_set
 from .scenario import start as scenario_start
 from .scenario import template as scenario_template
 from .server import member_list as server_member_list
+from .server import export_json as server_export_json
 from .server import role_add as server_role_add
 from .server import role_edit as server_role_edit
 from .server import role_get as server_role_get
@@ -181,6 +182,10 @@ def register_slash_commands(tree: app_commands.CommandTree[discord.Client]) -> N
     @server_member.command(name="list", description="サーバーメンバー一覧をCSVで取得")
     async def server_member_list_command(interaction: discord.Interaction) -> None:
         await _run(interaction, lambda message: server_member_list.main(interaction.client, message), "/server_member_list")
+
+    @server_group.command(name="export", description="ロール・メンバーロール・チャンネルをJSONで取得")
+    async def server_export_command(interaction: discord.Interaction) -> None:
+        await _run(interaction, server_export_json.main, "/server_export")
 
     @channel_group.command(name="create", description="チャンネルを作成")
     async def channel_create_command(interaction: discord.Interaction, channel_type: str, channel_name: str, category_name: str | None = None) -> None:

@@ -3,7 +3,13 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from tools.template_editor.template_logic import list_template_files, load_table, normalize, save_table
+from tools.template_editor.template_logic import (
+    list_template_files,
+    load_table,
+    normalize,
+    row_matches_filters,
+    save_table,
+)
 
 
 class TemplateLogicTest(unittest.TestCase):
@@ -33,6 +39,13 @@ class TemplateLogicTest(unittest.TestCase):
     def test_normalize_pads(self):
         self.assertEqual(normalize([["a", "b"], ["c"]]), [["a", "b"], ["c", ""]])
 
+    def test_row_matches_multiple_column_filters_and_blank_values(self):
+        filters = {0: {"one", "two"}, 1: {""}}
+        self.assertTrue(row_matches_filters(["one", ""], filters))
+        self.assertFalse(row_matches_filters(["two", "filled"], filters))
+        self.assertFalse(row_matches_filters(["three", ""], filters))
+        self.assertFalse(row_matches_filters(["one"], {1: {""}}))
+
     def test_list_files_excludes_unrelated(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
@@ -57,4 +70,3 @@ class TemplateLogicTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

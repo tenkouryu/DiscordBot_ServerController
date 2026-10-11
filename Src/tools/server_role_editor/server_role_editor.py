@@ -40,6 +40,7 @@ _TOOLS_DIR = str(Path(__file__).resolve().parents[1])
 if _TOOLS_DIR not in _sys.path:
     _sys.path.insert(0, _TOOLS_DIR)
 from common.window_base import EditorFrame  # noqa: E402
+from common.treeview_filter import TreeviewColumnFilter  # noqa: E402
 
 
 class ServerRoleEditor(EditorFrame):
@@ -81,11 +82,14 @@ class ServerRoleEditor(EditorFrame):
         self.role_list.column("name", width=170, minwidth=90)
         self.role_list.column("color", width=90, minwidth=70, anchor="center")
         self.role_list.pack(fill="both", expand=True)
+        self.role_filter = TreeviewColumnFilter(self.role_list)
+        self.role_filter.on_filtered = self.on_role_filter_changed
         self.role_list.bind("<<TreeviewSelect>>", self.on_select_role)
         role_buttons = ttk.Frame(list_frame)
         role_buttons.pack(fill="x", pady=(4, 0))
         ttk.Button(role_buttons, text="ロール追加", command=self.add_role).pack(side="left")
         ttk.Button(role_buttons, text="ロール削除", command=self.delete_role).pack(side="left", padx=4)
+        ttk.Button(role_buttons, text="フィルター解除", command=self.role_filter.clear_filters).pack(side="right")
 
         details = ttk.Frame(content, padding=8)
         content.add(details, weight=3)
@@ -189,6 +193,7 @@ class ServerRoleEditor(EditorFrame):
         return self.color_images[key]
 
     def refresh_roles(self, select_index: int | None = None) -> None:
+        self.role_filter.prepare_refresh()
         self.role_list.delete(*self.role_list.get_children())
         for index, role in enumerate(self.roles):
             self.role_list.insert(
@@ -196,7 +201,12 @@ class ServerRoleEditor(EditorFrame):
                 image=self.color_image(role.get("color", "")),
                 values=(role.get("name", ""), role.get("color", "")),
             )
-        if select_index is not None and 0 <= select_index < len(self.roles):
+        self.role_filter.finish_refresh()
+        if (
+            select_index is not None
+            and 0 <= select_index < len(self.roles)
+            and self.role_filter.is_visible(str(select_index))
+        ):
             item = str(select_index)
             self.role_list.selection_set(item)
             self.role_list.focus(item)
@@ -213,6 +223,10 @@ class ServerRoleEditor(EditorFrame):
         index = int(selected[0])
         self.commit_details()
         self.show_role(index)
+
+    def on_role_filter_changed(self) -> None:
+        if self.current_index is not None and not self.role_filter.is_visible(str(self.current_index)):
+            self.show_role(None)
 
     def show_role(self, index: int | None) -> None:
         self.current_index = index
@@ -265,6 +279,7 @@ class ServerRoleEditor(EditorFrame):
             image=self.color_image(role["color"]),
             values=(role["name"], role["color"]),
         )
+        self.role_filter.update_item(str(self.current_index))
         self.mark_dirty()
 
     def set_permission(self, permission: str) -> None:

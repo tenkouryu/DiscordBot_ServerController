@@ -50,6 +50,7 @@ _TOOLS_DIR = str(Path(__file__).resolve().parents[1])
 if _TOOLS_DIR not in _sys.path:
     _sys.path.insert(0, _TOOLS_DIR)
 from common.window_base import EditorFrame  # noqa: E402
+from common.treeview_filter import TreeviewColumnFilter  # noqa: E402
 
 
 class MemberRoleEditor(EditorFrame):
@@ -90,11 +91,14 @@ class MemberRoleEditor(EditorFrame):
         self.row_list.column("action", width=60, minwidth=50, anchor="center")
         self.row_list.column("roles", width=200, minwidth=90)
         self.row_list.pack(fill="both", expand=True)
+        self.row_filter = TreeviewColumnFilter(self.row_list)
+        self.row_filter.on_filtered = self.on_row_filter_changed
         self.row_list.bind("<<TreeviewSelect>>", self.on_select_row)
         row_buttons = ttk.Frame(list_frame)
         row_buttons.pack(fill="x", pady=(4, 0))
         ttk.Button(row_buttons, text="行を追加", command=self.add_row).pack(side="left")
         ttk.Button(row_buttons, text="行を削除", command=self.delete_row).pack(side="left", padx=4)
+        ttk.Button(row_buttons, text="フィルター解除", command=self.row_filter.clear_filters).pack(side="right")
 
         details_outer = ttk.Frame(content)
         content.add(details_outer, weight=2)
@@ -164,10 +168,16 @@ class MemberRoleEditor(EditorFrame):
         return target, action, roles
 
     def refresh_rows(self, select_index: int | None = None) -> None:
+        self.row_filter.prepare_refresh()
         self.row_list.delete(*self.row_list.get_children())
         for index, row in enumerate(self.table.rows):
             self.row_list.insert("", "end", iid=str(index), values=self.summarize(row))
-        if select_index is not None and 0 <= select_index < len(self.table.rows):
+        self.row_filter.finish_refresh()
+        if (
+            select_index is not None
+            and 0 <= select_index < len(self.table.rows)
+            and self.row_filter.is_visible(str(select_index))
+        ):
             item = str(select_index)
             self.row_list.selection_set(item)
             self.row_list.focus(item)
@@ -180,6 +190,10 @@ class MemberRoleEditor(EditorFrame):
         selected = self.row_list.selection()
         if selected:
             self.show_row(int(selected[0]))
+
+    def on_row_filter_changed(self) -> None:
+        if self.current_index is not None and not self.row_filter.is_visible(str(self.current_index)):
+            self.show_row(None)
 
     def show_row(self, index: int | None) -> None:
         self.current_index = index
@@ -214,6 +228,7 @@ class MemberRoleEditor(EditorFrame):
         row = self.table.rows[self.current_index]
         row[column] = self.field_vars[column].get()
         self.row_list.item(str(self.current_index), values=self.summarize(row))
+        self.row_filter.update_item(str(self.current_index))
         self.mark_dirty()
 
     def add_row(self) -> None:

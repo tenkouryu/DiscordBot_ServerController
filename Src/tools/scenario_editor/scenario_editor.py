@@ -8,7 +8,13 @@ import os
 from pathlib import Path
 import tempfile
 import tkinter as tk
+import sys
 from tkinter import filedialog, messagebox, ttk
+
+_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from common.treeview_filter import TreeviewColumnFilter  # noqa: E402
 
 
 _REQUIRED_COLUMNS = {
@@ -374,12 +380,19 @@ class ScenarioEditor(EditorFrame):
         scenario_scrollbar.pack(side="right", fill="y")
         self.scenario_list.bind("<<ListboxSelect>>", self._on_scenario_selected)
 
-        ttk.Label(navigation, text="ステップ").pack(anchor="w")
+        step_heading = ttk.Frame(navigation)
+        step_heading.pack(fill="x")
+        ttk.Label(step_heading, text="ステップ").pack(side="left", anchor="w")
         step_frame = ttk.Frame(navigation)
         step_frame.pack(fill="both", expand=True, pady=(4, 0))
         self.step_list = ttk.Treeview(step_frame, columns=("step",), show="headings")
         self.step_list.heading("step", text="Step")
         self.step_list.column("step", width=100, anchor="center")
+        self.step_filter = TreeviewColumnFilter(self.step_list)
+        self.step_filter.on_filtered = self._on_step_filter_changed
+        ttk.Button(
+            step_heading, text="フィルター解除", command=self.step_filter.clear_filters
+        ).pack(side="right")
         step_scrollbar = ttk.Scrollbar(
             step_frame, orient="vertical", command=self.step_list.yview
         )
@@ -647,14 +660,25 @@ class ScenarioEditor(EditorFrame):
         self._commit_editor()
         scenario_label = self.scenario_list.get(scenario_index)
         steps = self.scenarios[scenario_label]
+        self.step_filter.prepare_refresh()
         for item in self.step_list.get_children():
             self.step_list.delete(item)
         for index, step in enumerate(steps):
             self.step_list.insert("", "end", iid=str(index), values=(step["step"],))
-        if steps:
-            self.step_list.selection_set("0")
-            self.step_list.focus("0")
-            self._show_step(0)
+        self.step_filter.finish_refresh()
+
+    def _on_step_filter_changed(self) -> None:
+        visible = self.step_list.get_children("")
+        selection = self.step_list.selection()
+        if selection and selection[0] in visible:
+            return
+        if not visible:
+            self.detail_heading.configure(text="フィルターに一致するステップがありません")
+            return
+        item = visible[0]
+        self.step_list.selection_set(item)
+        self.step_list.focus(item)
+        self._show_step(int(item))
 
     def _on_step_selected(self, _event: tk.Event | None = None) -> None:
         selection = self.step_list.selection()

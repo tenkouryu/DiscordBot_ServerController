@@ -20,8 +20,8 @@ def create_template_output_path(
     """出力カテゴリ内に一意な成果物パスを作成する。"""
     if category not in {"set/response", "get/result"}:
         raise ValueError(f"未対応の出力カテゴリです: {category}")
-    if suffix not in {".csv", ".zip"}:
-        raise ValueError("出力ファイルの拡張子は .csv または .zip を指定してください。")
+    if suffix not in {".csv", ".json", ".zip"}:
+        raise ValueError("出力ファイルの拡張子は .csv、.json、または .zip を指定してください。")
 
     safe_prefix = re.sub(r"[^A-Za-z0-9_-]+", "_", prefix).strip("_")
     if not safe_prefix:

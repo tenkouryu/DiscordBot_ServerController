@@ -31,6 +31,7 @@ def get_command_help_text() -> str:
         "/server role template - サーバーロールCSVテンプレート\n"
         "/server role remove ロール名 - ロールを削除\n"
         "/server member list - メンバー一覧をCSVで取得\n"
+        "/server export - ロール・メンバーロール・チャンネル情報を1つのJSONで取得\n"
         "/channel create text|voice チャンネル名 [カテゴリー名] - チャンネルを作成\n"
         "/channel move #チャンネル カテゴリー名 - チャンネルを移動\n"
         "/channel get - チャンネル一覧をCSVで取得\n"

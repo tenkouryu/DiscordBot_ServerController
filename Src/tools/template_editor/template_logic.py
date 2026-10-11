@@ -79,6 +79,11 @@ def normalize(rows: list[list[str]]) -> list[list[str]]:
     return [row + [""] * (width - len(row)) for row in rows]
 
 
+def row_matches_filters(row: list[str], filters: dict[int, set[str]]) -> bool:
+    """すべての列フィルターに一致する行か返す。"""
+    return all(index < len(row) and row[index] in values for index, values in filters.items())
+
+
 def save_table(path: Path, rows: list[list[str]], bom: bool) -> None:
     buffer = io.StringIO(newline="")
     csv.writer(buffer, lineterminator="\r\n").writerows(rows)
@@ -90,4 +95,3 @@ def save_table(path: Path, rows: list[list[str]], bom: bool) -> None:
             archive.writestr(name, data)
     else:
         path.write_bytes(data)
-

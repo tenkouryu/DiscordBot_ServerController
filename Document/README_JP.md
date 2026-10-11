@@ -79,7 +79,7 @@ Bot設定の確認・編集、項目の追加・削除ができます。Windows�
 python Src/tools/template_editor/template_editor.py
 ```
 
-CSVテンプレートのセルをダブルクリックして編集できます。行・列の追加や削除、列名変更、上書き保存、別名保存に対応しています。左側の一覧にはファイル名と種別（CSV/ZIP）が表示されます。Python版は `Src/templates`、[csv_editor.exe](../release/tools/csv_editor.exe) のテンプレートタブは `release/tools/templates` のCSVとCSVを含むZIPを既定で一覧表示します。
+CSVテンプレートのセルをダブルクリックして編集できます。列見出しの「▼」から列ごとの値を選んで絞り込め、複数列の条件を組み合わせたり空欄を選んだりできます。行・列の追加や削除、列名変更、上書き保存、別名保存にも対応しています。左側の一覧にはファイル名と種別（CSV/ZIP）が表示されます。Python版は `Src/templates`、[csv_editor.exe](../release/tools/csv_editor.exe) のテンプレートタブは `release/tools/templates` のCSVとCSVを含むZIPを既定で一覧表示します。
 
 ### サーバーロールCSVエディター
 
@@ -87,7 +87,7 @@ CSVテンプレートのセルをダブルクリックして編集できます�
 python Src/tools/server_role_editor/server_role_editor.py
 ```
 
-サーバーロール設定CSVのロール行を専用画面で追加・削除し、ロール名・色・権限を編集できます。権限列は必要なものだけ追加・削除できます。既定では `Src/templates/set/input/server_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
+サーバーロール設定CSVのロール行を専用画面で追加・削除し、ロール名・色・権限を編集できます。ロール一覧の列見出しから、ロール名や色の値で絞り込めます。権限列は必要なものだけ追加・削除できます。既定では `Src/templates/set/input/server_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
 Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
 
 ### メンバーロールCSVエディター
@@ -96,7 +96,7 @@ Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブ�
 python Src/tools/member_role_editor/member_role_editor.py
 ```
 
-メンバーのロールCSVの行を専用画面で追加・削除し、ロール列を増減できます。`/member role set` 用（追加/削除, ユーザーID, ユーザー名, 表示名, ロール1…）と `/member role update` 用（User ID, Name, Display Name, Role1…）を列名から自動判別します。保存時に、操作・メンバー指定・ロール名・ユーザーIDの入力ミスを確認します。既定では `Src/templates/set/input/member_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
+メンバーのロールCSVの行を専用画面で追加・削除し、ロール列を増減できます。メンバー一覧の列見出しから対象・操作・ロールの値を列ごとに絞り込めます。`/member role set` 用（追加/削除, ユーザーID, ユーザー名, 表示名, ロール1…）と `/member role update` 用（User ID, Name, Display Name, Role1…）を列名から自動判別します。保存時に、操作・メンバー指定・ロール名・ユーザーIDの入力ミスを確認します。既定では `Src/templates/set/input/member_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
 Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
 
 ### チャンネルCSVエディター
@@ -105,7 +105,7 @@ Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブ�
 python Src/tools/channel_editor/channel_editor.py
 ```
 
-`/channel set` 用CSVの行を専用画面で追加・削除し、`role_N` 列（参加を許可するロール）と `user_N` 列（追加するユーザー）を増減できます。種類（`text` / `voice`）はプルダウンで選べ、保存時にチャンネル名と種類を確認します。既定では `Src/templates/set/input/channel_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
+`/channel set` 用CSVの行を専用画面で追加・削除し、`role_N` 列（参加を許可するロール）と `user_N` 列（追加するユーザー）を増減できます。チャンネル一覧の列見出しから、チャンネル名・種類・カテゴリー・ロール/ユーザーの値で絞り込めます。種類（`text` / `voice`）はプルダウンで選べ、保存時にチャンネル名と種類を確認します。既定では `Src/templates/set/input/channel_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
 Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の「チャンネル」タブから使えます。
 
 ### 統合エディター
@@ -123,7 +123,7 @@ Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) から起動で�
 python Src/tools/scenario_editor/scenario_editor.py
 ```
 
-CSVファイルまたはCSVを含むフォルダを開き、シナリオ、ステップの指示・完了条件・返信、分岐を編集できます。フォルダを開いた場合は、CSVごとのシナリオをIDとファイル名で選択できます。完了条件がリアクションの場合や分岐リアクションは、検索できるUnicode絵文字一覧から選択できます。保存時は変更した元CSVへの上書き確認が表示されます。Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
+CSVファイルまたはCSVを含むフォルダを開き、シナリオ、ステップの指示・完了条件・返信、分岐を編集できます。ステップ一覧の列見出しからステップ番号を絞り込めます。フォルダを開いた場合は、CSVごとのシナリオをIDとファイル名で選択できます。完了条件がリアクションの場合や分岐リアクションは、検索できるUnicode絵文字一覧から選択できます。保存時は変更した元CSVへの上書き確認が表示されます。Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の「シナリオ」タブから使えます。
 
 ## コマンド
 
@@ -198,9 +198,12 @@ CSV形式は [テンプレートファイル](#テンプレートファイル) �
 
 ```text
 /server member list
+/server export
 ```
 
 サーバーのメンバー一覧をCSVファイルで取得します。`User ID`、`Name`、`Display Name`、`Role1`、`Role2` の列を出力し、ロールは個別の列に記載します。CSVが大きい場合は、通信時間を短縮するためZIP形式で返信します。
+
+`/server export` はサーバーロール、メンバーごとのロール割り当て、チャンネル設定を1つのJSONファイルで取得します。ロール権限、チャンネルの種類・カテゴリー・設定、ロール/メンバーごとのチャンネル権限上書きも含みます。実行には「ロールの管理」と「チャンネルの管理」の両方の権限が必要です。
 
 ### チャンネル機能
 

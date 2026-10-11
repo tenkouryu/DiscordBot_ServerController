@@ -35,6 +35,15 @@ pip install discord.py
 python Src/bot_main.py
 ```
 
+### Tests
+
+Install the development dependencies and run the tests from the repository root.
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python -m pytest
+```
+
 ### Using the exe
 
 If Python is not installed, use the exe in the `release` folder.
@@ -71,7 +80,7 @@ View and edit bot settings, and add or remove settings. On Windows, use the Conf
 python Src/tools/template_editor/template_editor.py
 ```
 
-Double-click CSV cells to edit them. You can add or delete rows and columns, rename columns, save changes, or save to another file. The Python version lists CSV files and ZIP archives containing CSV files under `Src/templates` by default. the template tab of [csv_editor.exe](../release/tools/csv_editor.exe) lists files under `release/tools/templates`.
+Double-click CSV cells to edit them. Use the dropdown on each column heading to filter by value; filters on multiple columns combine, and blank values can be selected. You can add or delete rows and columns, rename columns, save changes, or save to another file. The Python version lists CSV files and ZIP archives containing CSV files under `Src/templates` by default. The Template tab of [csv_editor.exe](../release/tools/csv_editor.exe) lists files under `release/tools/templates`.
 The left-hand list shows each filename and its type (CSV/ZIP).
 
 ### Server role CSV editor
@@ -80,7 +89,7 @@ The left-hand list shows each filename and its type (CSV/ZIP).
 python Src/tools/server_role_editor/server_role_editor.py
 ```
 
-Use the dedicated GUI to add or delete server-role rows and edit role names, colors, and permissions. Permission columns can be added or removed as needed. It opens `Src/templates/set/input/server_role_template.csv` by default; append another CSV path to open a different file.
+Use the dedicated GUI to add or delete server-role rows and edit role names, colors, and permissions. Filter role names and colors from the list's column headings. Permission columns can be added or removed as needed. It opens `Src/templates/set/input/server_role_template.csv` by default; append another CSV path to open a different file.
 On Windows, use the matching tab of [csv_editor.exe](../release/tools/csv_editor.exe).
 
 ### Member role CSV editor
@@ -89,7 +98,7 @@ On Windows, use the matching tab of [csv_editor.exe](../release/tools/csv_editor
 python Src/tools/member_role_editor/member_role_editor.py
 ```
 
-Use the dedicated GUI to add or delete rows in a member-role CSV and to add or remove role columns. It detects the format from the column names: `/member role set` (追加/削除, ユーザーID, ユーザー名, 表示名, ロール1...) or `/member role update` (User ID, Name, Display Name, Role1...). On save it checks the action, member identifier, role names, and numeric user ID. It opens `Src/templates/set/input/member_role_template.csv` by default; append another CSV path to open a different file.
+Use the dedicated GUI to add or delete rows in a member-role CSV and to add or remove role columns. Filter the displayed target, action, and roles by each list column heading. It detects the format from the column names: `/member role set` (追加/削除, ユーザーID, ユーザー名, 表示名, ロール1...) or `/member role update` (User ID, Name, Display Name, Role1...). On save it checks the action, member identifier, role names, and numeric user ID. It opens `Src/templates/set/input/member_role_template.csv` by default; append another CSV path to open a different file.
 On Windows, use the matching tab of [csv_editor.exe](../release/tools/csv_editor.exe).
 
 ### Channel CSV editor
@@ -98,7 +107,7 @@ On Windows, use the matching tab of [csv_editor.exe](../release/tools/csv_editor
 python Src/tools/channel_editor/channel_editor.py
 ```
 
-Use the dedicated GUI to add or delete rows in a `/channel set` CSV and to add or remove `role_N` (roles allowed to join) and `user_N` (users to add) columns. The channel type (`text` / `voice`) is a drop-down, and saving checks the channel name and type. It opens `Src/templates/set/input/channel_template.csv` by default; append another CSV path to open a different file.
+Use the dedicated GUI to add or delete rows in a `/channel set` CSV and to add or remove `role_N` (roles allowed to join) and `user_N` (users to add) columns. Filter channel names, types, categories, and role/user values from the list's column headings. The channel type (`text` / `voice`) is a drop-down, and saving checks the channel name and type. It opens `Src/templates/set/input/channel_template.csv` by default; append another CSV path to open a different file.
 On Windows, use the Channel tab of [csv_editor.exe](../release/tools/csv_editor.exe).
 
 ### Integrated editor
@@ -116,7 +125,7 @@ On Windows, start [csv_editor.exe](../release/tools/csv_editor.exe).
 python Src/tools/scenario_editor/scenario_editor.py
 ```
 
-Open a CSV file or a folder containing CSV files to edit scenarios, step instructions, completion conditions, responses, and branches. When opening a folder, select a scenario by its ID and filename. Reaction completion values and branch reactions can be selected from a searchable Unicode emoji list. Saving prompts before overwriting the changed original CSV files. On Windows, use the matching tab of [csv_editor.exe](../release/tools/csv_editor.exe).
+Open a CSV file or a folder containing CSV files to edit scenarios, step instructions, completion conditions, responses, and branches. Filter step numbers from the step list's column heading. When opening a folder, select a scenario by its ID and filename. Reaction completion values and branch reactions can be selected from a searchable Unicode emoji list. Saving prompts before overwriting the changed original CSV files. On Windows, use the Scenario tab of [csv_editor.exe](../release/tools/csv_editor.exe).
 
 ## Commands
 
@@ -191,9 +200,12 @@ The `add`, `edit`, `set`, and `remove` commands require the Manage Roles permiss
 
 ```text
 /server member list
+/server export
 ```
 
 Exports the server member list as a CSV file with English column headers (`User ID`, `Name`, `Display Name`, `Role1`, `Role2`, etc.) and each role in its own column. Large CSV files are returned as ZIP archives to reduce upload time.
+
+`/server export` downloads one JSON file containing server roles, each member's role assignments, and channel settings. It includes role permissions, channel types/categories/settings, and channel permission overwrites for roles and members. Both Manage Roles and Manage Channels permissions are required.
 
 ### Channel commands
 

@@ -18,6 +18,10 @@ class TreeviewColumnFilter:
         self.items: list[str] = []
         self.values: dict[str, tuple[str, ...]] = {}
         self.on_filtered: Callable[[], None] | None = None
+        self.on_sort: Callable[[int, bool], None] | None = None
+        self.header_suffix: Callable[[int], str] | None = None
+        self.sort_column: int | None = None
+        self.sort_reverse = False
         self.headers: list[str] = []
         self._read_headers()
 
@@ -25,10 +29,9 @@ class TreeviewColumnFilter:
         self.headers = []
         for column in self.tree["columns"]:
             text = str(self.tree.heading(column, "text"))
-            for marker in (" ▼●", " ▼"):
-                if text.endswith(marker):
+            for marker in (" ▼●", " ▼", " ↑", " ↓"):
+                while text.endswith(marker):
                     text = text[: -len(marker)]
-                    break
             self.headers.append(text)
         self._update_headers()
 
@@ -36,11 +39,20 @@ class TreeviewColumnFilter:
         for index, column in enumerate(self.tree["columns"]):
             header = self.headers[index] if index < len(self.headers) else str(column)
             marker = " ▼●" if index in self.filters else " ▼"
+            if self.header_suffix is not None:
+                suffix = self.header_suffix(index)
+            elif index == self.sort_column:
+                suffix = " ↓" if self.sort_reverse else " ↑"
+            else:
+                suffix = ""
             self.tree.heading(
                 column,
-                text=header + marker,
+                text=header + suffix + marker,
                 command=lambda selected=index: self.open_filter(selected),
             )
+
+    def refresh_headers(self) -> None:
+        self._update_headers()
 
     def prepare_refresh(self) -> None:
         for item in self.items:
@@ -51,6 +63,9 @@ class TreeviewColumnFilter:
 
     def finish_refresh(self) -> None:
         self._read_headers()
+        if self.sort_column is not None and self.sort_column >= len(self.tree["columns"]):
+            self.sort_column = None
+            self.sort_reverse = False
         self.items = list(self.tree.get_children(""))
         self.values = {
             item: tuple(str(value) for value in self.tree.item(item, "values"))
@@ -79,6 +94,8 @@ class TreeviewColumnFilter:
                 self.tree.move(item, "", "end")
             else:
                 self.tree.detach(item)
+        if self.on_sort is None:
+            self._apply_sort()
         self._update_headers()
         selection = self.tree.selection()
         if any(not self.is_visible(item) for item in selection):
@@ -104,6 +121,19 @@ class TreeviewColumnFilter:
 
         body = ttk.Frame(popup, padding=8)
         body.pack(fill="both", expand=True)
+        sort_buttons = ttk.Frame(body)
+        sort_buttons.pack(fill="x", pady=(0, 6))
+        ttk.Button(
+            sort_buttons,
+            text="昇順で並べ替え",
+            command=lambda: apply_sort(False),
+        ).pack(side="left")
+        ttk.Button(
+            sort_buttons,
+            text="降順で並べ替え",
+            command=lambda: apply_sort(True),
+        ).pack(side="left", padx=(4, 0))
+        ttk.Separator(body).pack(fill="x", pady=(0, 6))
         ttk.Label(body, text=f"「{header}」の表示値を選択").pack(anchor="w")
         ttk.Label(body, text="値を検索", foreground="gray").pack(anchor="w", pady=(6, 0))
         search = tk.StringVar()
@@ -124,9 +154,6 @@ class TreeviewColumnFilter:
         canvas.pack(fill="both", expand=True)
 
         variables = {value: tk.BooleanVar(value=value in selected) for value in choices}
-
-        def sync_all() -> None:
-            all_var.set(all(variable.get() for variable in variables.values()))
 
         def toggle_all() -> None:
             for variable in variables.values():
@@ -157,6 +184,16 @@ class TreeviewColumnFilter:
         buttons = ttk.Frame(body)
         buttons.pack(fill="x", pady=(6, 0))
 
+        def apply_sort(reverse: bool) -> None:
+            if self.on_sort is not None:
+                self.on_sort(column_index, reverse)
+            else:
+                self.sort_column = column_index
+                self.sort_reverse = reverse
+                self._apply_sort()
+                self._update_headers()
+            popup.destroy()
+
         def apply_filter() -> None:
             chosen = {value for value, variable in variables.items() if variable.get()}
             if chosen == set(choices):
@@ -177,3 +214,24 @@ class TreeviewColumnFilter:
         popup.bind("<Return>", lambda _event: apply_filter())
         popup.bind("<Escape>", lambda _event: popup.destroy())
         popup.grab_set()
+
+    def _apply_sort(self) -> None:
+        if self.sort_column is None:
+            return
+        column = str(self.tree["columns"][self.sort_column])
+        visible = list(self.tree.get_children(""))
+        visible.sort(
+            key=lambda item: _sort_value(str(self.tree.set(item, column))),
+            reverse=self.sort_reverse,
+        )
+        for index, item in enumerate(visible):
+            self.tree.move(item, "", index)
+
+
+def _sort_value(value: str) -> tuple[int, object]:
+    if not value:
+        return 0, ""
+    try:
+        return 1, float(value)
+    except ValueError:
+        return 2, value.casefold()

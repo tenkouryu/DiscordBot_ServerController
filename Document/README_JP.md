@@ -63,67 +63,28 @@ Bot トークンは公開せず、設定ファイルを Git にコミットし�
 
 ## 補助GUIツール
 
-補助ツールはPython標準ライブラリのTkinterを使ったGUIです。Python環境では、リポジトリのルートから次のコマンドで起動できます。Windowsでは設定エディターのexeも利用できます。
+CSVの編集機能は統合CSVエディターに集約されています。Python環境ではリポジトリのルートから次のコマンドで起動できます。Windowsでは同じ統合版をexeで利用できます。
 
-### 設定エディター
-
-```powershell
-python Src/tools/config_editor/config_editor.py
-```
-
-Bot設定の確認・編集、項目の追加・削除ができます。Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の「設定」タブから使え、既定で `release/config/config.json` を開きます。Python版は既定で `Src/config/config.json` を開きます。別の設定ファイルを指定する場合は、exeまたはコマンドの末尾にJSONファイルのパスを渡してください。トークンなどの秘密情報は画面上でマスクされます。保存した設定をBotに反映するにはBotの再起動が必要です。設定ファイルを公開したりGitにコミットしたりしないでください。
-
-### テンプレートエディター
+### サーバーエクスポートJSONエディター
 
 ```powershell
-python Src/tools/template_editor/template_editor.py
+python Src/tools/server_export_editor/server_export_editor.py
 ```
 
-CSVテンプレートのセルをダブルクリックして編集できます。列見出しの「▼」から列ごとの値を選んで絞り込め、複数列の条件を組み合わせたり空欄を選んだりできます。行・列の追加や削除、列名変更、上書き保存、別名保存にも対応しています。左側の一覧にはファイル名と種別（CSV/ZIP）が表示されます。Python版は `Src/templates`、[csv_editor.exe](../release/tools/csv_editor.exe) のテンプレートタブは `release/tools/templates` のCSVとCSVを含むZIPを既定で一覧表示します。
+`/server export` で取得したJSONを編集する専用ツールです。CSVエディターとは別のアプリです。サーバーロール・メンバーロール・チャンネルの一覧は列見出しをクリックするとExcel形式のドロップダウンが開き、昇順・降順の並べ替え、値の検索、チェックボックスによる複数値の絞り込みができます。
+Windowsでは [server_export_editor.exe](../release/tools/server_export_editor.exe) を起動するか、JSONファイルを引数に指定して開けます。
 
-### サーバーロールCSVエディター
-
-```powershell
-python Src/tools/server_role_editor/server_role_editor.py
-```
-
-サーバーロール設定CSVのロール行を専用画面で追加・削除し、ロール名・色・権限を編集できます。ロール一覧の列見出しから、ロール名や色の値で絞り込めます。権限列は必要なものだけ追加・削除できます。既定では `Src/templates/set/input/server_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
-Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
-
-### メンバーロールCSVエディター
-
-```powershell
-python Src/tools/member_role_editor/member_role_editor.py
-```
-
-メンバーのロールCSVの行を専用画面で追加・削除し、ロール列を増減できます。メンバー一覧の列見出しから対象・操作・ロールの値を列ごとに絞り込めます。`/member role set` 用（追加/削除, ユーザーID, ユーザー名, 表示名, ロール1…）と `/member role update` 用（User ID, Name, Display Name, Role1…）を列名から自動判別します。保存時に、操作・メンバー指定・ロール名・ユーザーIDの入力ミスを確認します。既定では `Src/templates/set/input/member_role_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
-Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の該当タブから使えます。
-
-### チャンネルCSVエディター
-
-```powershell
-python Src/tools/channel_editor/channel_editor.py
-```
-
-`/channel set` 用CSVの行を専用画面で追加・削除し、`role_N` 列（参加を許可するロール）と `user_N` 列（追加するユーザー）を増減できます。チャンネル一覧の列見出しから、チャンネル名・種類・カテゴリー・ロール/ユーザーの値で絞り込めます。種類（`text` / `voice`）はプルダウンで選べ、保存時にチャンネル名と種類を確認します。既定では `Src/templates/set/input/channel_template.csv` を開き、別のCSVを開く場合はコマンドの末尾にパスを指定します。
-Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の「チャンネル」タブから使えます。
-
-### 統合エディター
+### 統合CSVエディター
 
 ```powershell
 python Src/tools/csv_editor/csv_editor.py
 ```
 
-設定・テンプレート・サーバーロール・メンバーロール・チャンネル・シナリオの各エディターを1つのウィンドウのタブにまとめたアプリです。未保存の変更があるタブには `*` が付き、終了時に確認します。各エディターは従来どおり単体でも起動できます。
-Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) から起動できます。
+「設定」「テンプレート」「サーバーロール」「メンバーロール」「チャンネル」「シナリオ」をタブで切り替えて編集できます。CSV一覧の列見出しをクリックするとExcel形式のドロップダウンが開き、昇順・降順の並べ替え、値の検索、チェックボックスによる複数値の絞り込みができます。複数列の条件を組み合わせたり、空欄を選んだりできます。テンプレートはセルのダブルクリックで編集できます。メンバーロールCSVは列名から形式を自動判定し、保存時に入力を検証します。未保存の変更があるタブには `*` が付き、終了時に確認します。
 
-### シナリオエディター
+サーバーロールCSVではロール名・色・権限の編集と権限列の追加・削除、メンバーロールCSVではロール列の追加・削除、チャンネルCSVでは`role_N`・`user_N`列の追加・削除ができます。シナリオタブではCSVファイルまたはフォルダを開き、ステップ指示・完了条件・返信・分岐を編集できます。設定タブではトークンなどの秘密情報がマスクされます。設定を保存した後はBotの再起動が必要です。
 
-```powershell
-python Src/tools/scenario_editor/scenario_editor.py
-```
-
-CSVファイルまたはCSVを含むフォルダを開き、シナリオ、ステップの指示・完了条件・返信、分岐を編集できます。ステップ一覧の列見出しからステップ番号を絞り込めます。フォルダを開いた場合は、CSVごとのシナリオをIDとファイル名で選択できます。完了条件がリアクションの場合や分岐リアクションは、検索できるUnicode絵文字一覧から選択できます。保存時は変更した元CSVへの上書き確認が表示されます。Windowsでは [csv_editor.exe](../release/tools/csv_editor.exe) の「シナリオ」タブから使えます。
+Python版は既定で `Src/templates` と `Src/config/config.json` を使用し、Windowsの [csv_editor.exe](../release/tools/csv_editor.exe) は `release` 内の設定・テンプレートを使用します。別の設定ファイルを開くには「設定」タブの「開く...」を使います。設定ファイルを公開したりGitにコミットしたりしないでください。
 
 ## コマンド
 
@@ -140,6 +101,7 @@ flowchart TD
 
     C --> C1["ロール<br/>add / get / set / update<br/>template / remove"]
     D --> D1["ロール<br/>add / edit / permissions / get<br/>set / template / remove"]
+    D --> D3["設定移行<br/>import / export"]
     D --> D2["メンバー<br/>list"]
     E --> E1["create / get / move<br/>set / template"]
     F --> F1["get / template"]
@@ -199,11 +161,14 @@ CSV形式は [テンプレートファイル](#テンプレートファイル) �
 ```text
 /server member list
 /server export
+/server import + JSONファイル
 ```
 
 サーバーのメンバー一覧をCSVファイルで取得します。`User ID`、`Name`、`Display Name`、`Role1`、`Role2` の列を出力し、ロールは個別の列に記載します。CSVが大きい場合は、通信時間を短縮するためZIP形式で返信します。
 
 `/server export` はサーバーロール、メンバーごとのロール割り当て、チャンネル設定を1つのJSONファイルで取得します。ロール権限、チャンネルの種類・カテゴリー・設定、ロール/メンバーごとのチャンネル権限上書きも含みます。実行には「ロールの管理」と「チャンネルの管理」の両方の権限が必要です。
+
+`/server import` にこのJSONを添付すると、最初に適用前のサーバー設定を `server_rollback_before_import_...json` というロールバック用ファイル名で返信し、その後サーバー設定をJSONと同期します。ロールバック用ファイルを再度 `/server import` に添付すると、適用前の状態へ戻せます。バックアップJSONの保存または送信に失敗した場合は、サーバー設定を変更しません。別サーバーへの移行ではロール名、メンバー名（必要に応じて表示名）、チャンネル名と種類で対象を対応付け、存在しない対象は作成します。JSONにない管理可能なロールとチャンネルは削除し、チャンネルの権限上書きとメンバーのロール割り当てはJSONの内容に置き換えます。JSONに記載のないメンバーからも管理可能なロールを解除します。メンバー自体は削除しません。Bot・連携サービスが管理するロールなどDiscord API上変更できない項目は保持され、結果CSVに記録されます。この処理は対象サーバーの設定を削除・変更するため、適用前にJSONエディターで内容を確認してください。適用結果は各対象の処理結果・失敗理由を記録したCSVで返信します。実行には「ロールの管理」と「チャンネルの管理」の両方の権限が必要です。
 
 ### チャンネル機能
 

@@ -6,38 +6,24 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from common.scrollable import ScrollableFrame  # noqa: E402
 from common.treeview_filter import TreeviewColumnFilter  # noqa: E402
 from common.window_base import EditorFrame  # noqa: E402
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from channel_logic import (
-        CHANNEL_TYPES,
-        ChannelTable,
-        add_numbered_column,
-        load_table,
-        new_row,
-        numbered_columns,
-        remove_last_numbered_column,
-        save_table,
-        validate_row,
-    )
-else:
-    from .channel_logic import (
-        CHANNEL_TYPES,
-        ChannelTable,
-        add_numbered_column,
-        load_table,
-        new_row,
-        numbered_columns,
-        remove_last_numbered_column,
-        save_table,
-        validate_row,
-    )
+from .channel_logic import (
+    CHANNEL_TYPES,
+    ChannelTable,
+    add_numbered_column,
+    load_table,
+    new_row,
+    numbered_columns,
+    remove_last_numbered_column,
+    save_table,
+    validate_row,
+)
 
 APP_TITLE = "チャンネルCSVエディタ"
 FIELD_LABELS = {"name": "チャンネル名 (name)", "type": "種類 (type)", "category": "カテゴリー (category)"}
@@ -49,7 +35,7 @@ def default_path() -> Path:
         base = Path(sys.executable).resolve().parent
         bundled = base / "templates" / "set" / "input" / name
         return bundled if bundled.exists() else base / name
-    return Path(__file__).resolve().parents[2] / "templates" / "set" / "input" / name
+    return Path(__file__).resolve().parents[3] / "templates" / "set" / "input" / name
 
 
 class ChannelEditor(EditorFrame):
@@ -278,12 +264,3 @@ class ChannelEditor(EditorFrame):
 
     def confirm_discard(self) -> bool:
         return not self.dirty or messagebox.askyesno("確認", "未保存の変更を破棄しますか?", parent=self)
-
-
-def main() -> None:
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else default_path()
-    ChannelEditor(path).mainloop()
-
-
-if __name__ == "__main__":
-    main()

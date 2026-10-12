@@ -6,7 +6,7 @@ Discordサーバーの運用を支援するBotです。メンバー・ロール�
 
 Botのエントリーポイントは `Src/bot_main.py` です。ルートの `run_bot.cmd` からも起動できます。
 
-`Src/tools/scenario_editor/` のシナリオエディターは、CSVまたはCSVを含むフォルダを開き、シナリオやステップの内容・分岐をGUIで編集して元のCSVに上書き保存するツールです。選択したフォルダ直下のCSVから、シナリオIDとファイル名を表示して対象を選択できます。完了条件がリアクションの場合や分岐リアクションは、検索可能なUnicode絵文字一覧から選択できます。
+`Src/tools/csv_editor/` の統合CSVエディターは、設定・テンプレート・サーバーロール・メンバーロール・チャンネル・シナリオの編集機能を1つのアプリで提供します。サーバーエクスポートJSONエディターは別ツールです。
 
 ## 2. ディレクトリ構成
 
@@ -22,9 +22,8 @@ Src/
     get/input/              Get用CSV入力
     get/result/              Get結果の分類
   test/                    テスト
-  tools/scenario_editor/   シナリオ編集GUIツール(tkinter)
-  tools/config_editor/     設定編集GUIツール(tkinter)
-  tools/template_editor/   テンプレートCSV編集GUIツール(tkinter)
+  tools/csv_editor/        設定・CSV統合編集GUI(tkinter)
+  tools/server_export_editor/ サーバーエクスポートJSON編集GUI(tkinter)
 
 Document/
   README_JP.md / README_EN.md
@@ -53,7 +52,7 @@ Discordイベントとコマンドの入口です。`on_ready`、メッセージ
 
 ### `Src/templates/` と `Src/tools/`
 
-CSV等の成果物を用途別に `Src/templates/set/input/`、`set/response/`、`get/input/`、`get/result/` に分類しています。Set応答とGet結果は実行時に各出力フォルダへ保存し、Discordにも添付します。生成ファイルはGit管理対象外です。`Src/tools/scenario_editor/` はシナリオCSVの確認・編集用ツールです。
+CSV等の成果物を用途別に `Src/templates/set/input/`、`set/response/`、`get/input/`、`get/result/` に分類しています。Set応答とGet結果は実行時に各出力フォルダへ保存し、Discordにも添付します。生成ファイルはGit管理対象外です。CSVと設定の編集は `Src/tools/csv_editor/csv_editor.py` の統合アプリから行います。
 
 ## 4. コマンド処理
 

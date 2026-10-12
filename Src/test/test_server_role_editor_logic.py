@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.server_role_editor.role_logic import load_roles, permission_columns, save_roles
+from tools.csv_editor.server_role_editor.role_logic import load_roles, permission_columns, save_roles
 
 
 class ServerRoleEditorLogicTest(unittest.TestCase):

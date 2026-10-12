@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ["server_role_editor.py"],
+    ["server_export_editor.py"],
     pathex=[".."],
     binaries=[],
     datas=[],
-    hiddenimports=["role_logic", "permission_labels"],
+    hiddenimports=["json_editor_logic"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name="server_role_editor",
+    name="server_export_editor",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

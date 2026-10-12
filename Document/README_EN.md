@@ -64,68 +64,29 @@ Do not expose the bot token, and avoid committing the configuration file to Git.
 
 ## Auxiliary GUI tools
 
-The helper tools use the Tkinter GUI included with Python. From the repository root, start them with the commands below. On Windows, the configuration editor is also available as an executable.
+CSV editing features are provided through the integrated CSV editor. Start it from the repository root with Python or use the same integrated executable on Windows.
 
-### Configuration editor
-
-```powershell
-python Src/tools/config_editor/config_editor.py
-```
-
-View and edit bot settings, and add or remove settings. On Windows, use the Config tab of [csv_editor.exe](../release/tools/csv_editor.exe), which opens `release/config/config.json` by default. The Python version opens `Src/config/config.json` by default. To edit another settings file, append its JSON path to the executable or command. Secret values such as the bot token are masked in the UI. Restart the bot to apply saved settings. Never expose the settings file or commit it to Git.
-
-### Template editor
+### Server export JSON editor
 
 ```powershell
-python Src/tools/template_editor/template_editor.py
+python Src/tools/server_export_editor/server_export_editor.py
 ```
 
-Double-click CSV cells to edit them. Use the dropdown on each column heading to filter by value; filters on multiple columns combine, and blank values can be selected. You can add or delete rows and columns, rename columns, save changes, or save to another file. The Python version lists CSV files and ZIP archives containing CSV files under `Src/templates` by default. The Template tab of [csv_editor.exe](../release/tools/csv_editor.exe) lists files under `release/tools/templates`.
-The left-hand list shows each filename and its type (CSV/ZIP).
+Edit JSON files produced by `/server export`; this is a separate application from the integrated CSV editor. Click a list heading to open an Excel-style dropdown with ascending/descending sorting, value search, and checkbox-based multi-value filtering.
+On Windows, run [server_export_editor.exe](../release/tools/server_export_editor.exe), optionally passing a JSON file path to open.
 
-### Server role CSV editor
-
-```powershell
-python Src/tools/server_role_editor/server_role_editor.py
-```
-
-Use the dedicated GUI to add or delete server-role rows and edit role names, colors, and permissions. Filter role names and colors from the list's column headings. Permission columns can be added or removed as needed. It opens `Src/templates/set/input/server_role_template.csv` by default; append another CSV path to open a different file.
-On Windows, use the matching tab of [csv_editor.exe](../release/tools/csv_editor.exe).
-
-### Member role CSV editor
-
-```powershell
-python Src/tools/member_role_editor/member_role_editor.py
-```
-
-Use the dedicated GUI to add or delete rows in a member-role CSV and to add or remove role columns. Filter the displayed target, action, and roles by each list column heading. It detects the format from the column names: `/member role set` (追加/削除, ユーザーID, ユーザー名, 表示名, ロール1...) or `/member role update` (User ID, Name, Display Name, Role1...). On save it checks the action, member identifier, role names, and numeric user ID. It opens `Src/templates/set/input/member_role_template.csv` by default; append another CSV path to open a different file.
-On Windows, use the matching tab of [csv_editor.exe](../release/tools/csv_editor.exe).
-
-### Channel CSV editor
-
-```powershell
-python Src/tools/channel_editor/channel_editor.py
-```
-
-Use the dedicated GUI to add or delete rows in a `/channel set` CSV and to add or remove `role_N` (roles allowed to join) and `user_N` (users to add) columns. Filter channel names, types, categories, and role/user values from the list's column headings. The channel type (`text` / `voice`) is a drop-down, and saving checks the channel name and type. It opens `Src/templates/set/input/channel_template.csv` by default; append another CSV path to open a different file.
-On Windows, use the Channel tab of [csv_editor.exe](../release/tools/csv_editor.exe).
-
-### Integrated editor
+### Integrated CSV editor
 
 ```powershell
 python Src/tools/csv_editor/csv_editor.py
 ```
 
-Combines the config, template, server role, member role, channel, and scenario editors as tabs in one window. A tab with unsaved changes is marked with `*`, and closing the app asks for confirmation. Each editor can still be launched on its own.
+This is the single CSV editor application, with Config, Template, Server role, Member role, Channel, and Scenario tabs. Click a list column heading to open an Excel-style dropdown with ascending/descending sorting, value search, and checkbox-based multi-value filtering. Filters on multiple columns combine, and blank values can be selected. Double-click template CSV cells to edit them. Member-role CSV formats are detected from their column names and validated on save. A tab with unsaved changes is marked with `*`, and closing the app asks for confirmation.
+
+The server-role tab can edit role names, colors, and permissions, and add or remove permission columns. The member-role tab can add or remove role columns. The channel tab can add or remove `role_N` and `user_N` columns. The Scenario tab opens a CSV or a folder of CSVs and edits step instructions, completion conditions, responses, and branches. Secret values such as the bot token are masked in the Config tab; restart the bot after saving settings.
+
+The Python version uses `Src/templates` and `Src/config/config.json` by default. The Windows [csv_editor.exe](../release/tools/csv_editor.exe) uses files under `release` by default. Use the Open button on the Config tab to select another settings file. Never expose the settings file or commit it to Git.
 On Windows, start [csv_editor.exe](../release/tools/csv_editor.exe).
-
-### Scenario editor
-
-```powershell
-python Src/tools/scenario_editor/scenario_editor.py
-```
-
-Open a CSV file or a folder containing CSV files to edit scenarios, step instructions, completion conditions, responses, and branches. Filter step numbers from the step list's column heading. When opening a folder, select a scenario by its ID and filename. Reaction completion values and branch reactions can be selected from a searchable Unicode emoji list. Saving prompts before overwriting the changed original CSV files. On Windows, use the Scenario tab of [csv_editor.exe](../release/tools/csv_editor.exe).
 
 ## Commands
 
@@ -142,6 +103,7 @@ flowchart TD
 
     C --> C1["Roles<br/>add / get / set / update<br/>template / remove"]
     D --> D1["Roles<br/>add / edit / permissions / get<br/>set / template / remove"]
+    D --> D3["Configuration migration<br/>import / export"]
     D --> D2["Members<br/>list"]
     E --> E1["create / get / move<br/>set / template"]
     F --> F1["get / template"]
@@ -201,11 +163,14 @@ The `add`, `edit`, `set`, and `remove` commands require the Manage Roles permiss
 ```text
 /server member list
 /server export
+/server import + JSON-file
 ```
 
 Exports the server member list as a CSV file with English column headers (`User ID`, `Name`, `Display Name`, `Role1`, `Role2`, etc.) and each role in its own column. Large CSV files are returned as ZIP archives to reduce upload time.
 
 `/server export` downloads one JSON file containing server roles, each member's role assignments, and channel settings. It includes role permissions, channel types/categories/settings, and channel permission overwrites for roles and members. Both Manage Roles and Manage Channels permissions are required.
+
+Attach this JSON to `/server import` to synchronize server settings with the snapshot. Before applying changes, the command first sends a rollback snapshot named `server_rollback_before_import_...json`. Attach that JSON to `/server import` to restore the pre-import state. If saving or sending the rollback file fails, the server is left unchanged. For migration to another server, roles are matched by name, members by username (then display name when needed), and channels by name and type; missing targets are created. Manageable roles and channels absent from the JSON are deleted, and channel permission overwrites and member-role assignments are replaced with the JSON values. Manageable roles are also removed from members absent from the JSON; members themselves are not deleted. Discord-managed roles and other settings the API cannot change are retained and reported in the result CSV. This operation changes and deletes server settings, so review the JSON in the dedicated editor before applying it. The command replies with a CSV recording each target's result and any failure reason. Both Manage Roles and Manage Channels permissions are required.
 
 ### Channel commands
 

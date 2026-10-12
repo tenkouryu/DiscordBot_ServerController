@@ -12,7 +12,7 @@ def default_config_path() -> Path:
     """設定エディター用の既定設定ファイルを返す。"""
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent.parent / "config" / "config.json"
-    return Path(__file__).resolve().parents[2] / "config" / "config.json"
+    return Path(__file__).resolve().parents[3] / "config" / "config.json"
 
 
 def is_secret_key(key: str) -> bool:

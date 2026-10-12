@@ -3,8 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools" / "channel_editor"))
-import channel_logic as logic  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from tools.csv_editor.channel_editor import channel_logic as logic  # noqa: E402
 
 TEMPLATE = Path(__file__).resolve().parents[1] / "templates" / "set" / "input" / "channel_template.csv"
 

@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.member_role_editor.member_logic import (
+from tools.csv_editor.member_role_editor.member_logic import (
     SET_FORMAT,
     UPDATE_FORMAT,
     add_role_column,

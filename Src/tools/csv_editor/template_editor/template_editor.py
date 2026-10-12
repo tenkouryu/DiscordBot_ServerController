@@ -1,27 +1,22 @@
 ﻿from __future__ import annotations
 
 import csv
-import sys
 import zipfile
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from template_logic import (default_templates_dir, list_template_files, load_table,
-                                normalize, row_matches_filters, save_table)
-else:
-    from .template_logic import (default_templates_dir, list_template_files, load_table,
-                                 normalize, row_matches_filters, save_table)
+from .template_logic import (default_templates_dir, list_template_files, load_table,
+                             normalize, save_table)
 
 
 import sys as _sys
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in _sys.path:
     _sys.path.insert(0, _TOOLS_DIR)
 from common.window_base import EditorFrame  # noqa: E402
+from common.treeview_filter import TreeviewColumnFilter  # noqa: E402
 
 
 class TemplateEditor(EditorFrame):
@@ -70,6 +65,9 @@ class TemplateEditor(EditorFrame):
 
         self.table = ttk.Treeview(right, show="headings", selectmode="browse")
         self.table.pack(fill="both", expand=True, pady=4)
+        self.table_filter = TreeviewColumnFilter(self.table)
+        self.table_filter.filters = self.filters
+        self.table_filter.on_filtered = self.on_table_filter_changed
         scroll_x = ttk.Scrollbar(right, orient="horizontal", command=self.table.xview)
         scroll_x.pack(fill="x")
         self.table.configure(xscrollcommand=scroll_x.set)
@@ -122,7 +120,7 @@ class TemplateEditor(EditorFrame):
             return
         self.path = path
         self.dirty = False
-        self.filters.clear()
+        self.table_filter.clear_filters()
         self.render()
 
     def render(self) -> None:
@@ -130,121 +128,37 @@ class TemplateEditor(EditorFrame):
         self.rows = normalize(self.rows)
         width = len(self.rows[0]) if self.rows else 0
         ids = [str(i) for i in range(width)]
+        self.table_filter.prepare_refresh()
         self.table.delete(*self.table.get_children())
         self.table.configure(columns=ids)
         header = self.rows[0] if self.rows else []
         for i, column in enumerate(ids):
             label = header[i] or f"({i + 1})"
-            indicator = " ▼●" if i in self.filters else " ▼"
-            self.table.heading(
-                column,
-                text=label + indicator,
-                command=lambda index=i: self.open_column_filter(index),
-            )
+            self.table.heading(column, text=label)
             self.table.column(column, width=140, stretch=False)
         for index, row in enumerate(self.rows[1:]):
-            if row_matches_filters(row, self.filters):
-                self.table.insert("", "end", iid=str(index), values=row)
+            self.table.insert("", "end", iid=str(index), values=row)
+        self.table_filter.finish_refresh()
+        self.table_filter.refresh_headers()
+        self.update_filter_status()
+
+        self.title(f"テンプレートエディタ - {self.path.name if self.path else ''}{' *' if self.dirty else ''}")
+
+    def on_table_filter_changed(self) -> None:
+        self.update_filter_status()
+
+    def update_filter_status(self) -> None:
         if self.filters:
             count = len(self.table.get_children())
             self.status.config(text=f"フィルター適用中: {count} / {max(0, len(self.rows) - 1)} 行")
         elif self.status.cget("text").startswith("フィルター適用中:"):
             self.status.config(text="セルをダブルクリックで編集。1行目はヘッダ行です。")
-        self.title(f"テンプレートエディタ - {self.path.name if self.path else ''}{' *' if self.dirty else ''}")
 
     def open_column_filter(self, column_index: int) -> None:
-        if not self.rows or column_index >= len(self.rows[0]):
-            return
-        header = self.rows[0][column_index] or f"({column_index + 1})"
-        values = sorted({row[column_index] for row in self.rows[1:]}, key=lambda value: (value.casefold(), value))
-        selected = self.filters.get(column_index, set(values)).copy()
-        popup = tk.Toplevel(self)
-        popup.title(f"フィルター: {header}")
-        popup.transient(self.winfo_toplevel())
-        popup.resizable(True, True)
-        popup.geometry(f"320x430+{popup.winfo_pointerx()}+{popup.winfo_pointery()}")
-
-        body = ttk.Frame(popup, padding=8)
-        body.pack(fill="both", expand=True)
-        ttk.Label(body, text=f"「{header}」の表示値を選択").pack(anchor="w")
-        search = tk.StringVar()
-        ttk.Label(body, text="値を検索", foreground="gray").pack(anchor="w", pady=(6, 0))
-        ttk.Entry(body, textvariable=search).pack(fill="x", pady=(6, 4))
-
-        all_var = tk.BooleanVar(value=len(selected) == len(values))
-        options_canvas = tk.Canvas(body, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(body, orient="vertical", command=options_canvas.yview)
-        options_canvas.configure(yscrollcommand=scrollbar.set)
-        options_frame = ttk.Frame(options_canvas)
-        options_window = options_canvas.create_window((0, 0), window=options_frame, anchor="nw")
-        options_frame.bind(
-            "<Configure>", lambda _e: options_canvas.configure(scrollregion=options_canvas.bbox("all"))
-        )
-        options_canvas.bind(
-            "<Configure>", lambda event: options_canvas.itemconfigure(options_window, width=event.width)
-        )
-        scrollbar.pack(side="right", fill="y")
-        options_canvas.pack(fill="both", expand=True, pady=4)
-
-        check_vars: dict[str, tk.BooleanVar] = {
-            value: tk.BooleanVar(value=value in selected) for value in values
-        }
-
-        def sync_all() -> None:
-            all_var.set(all(variable.get() for variable in check_vars.values()))
-
-        def toggle_all() -> None:
-            for variable in check_vars.values():
-                variable.set(all_var.get())
-
-        ttk.Checkbutton(body, text="すべて選択", variable=all_var, command=toggle_all).pack(anchor="w")
-
-        def rebuild_options(*_args: object) -> None:
-            for child in options_frame.winfo_children():
-                child.destroy()
-            query = search.get().casefold()
-            for value in values:
-                label = value if value else "(空白)"
-                if query and query not in label.casefold():
-                    continue
-                ttk.Checkbutton(
-                    options_frame,
-                    text=label,
-                    variable=check_vars[value],
-                    command=sync_all,
-                ).pack(anchor="w", fill="x")
-
-        search.trace_add("write", rebuild_options)
-        rebuild_options()
-
-        buttons = ttk.Frame(body)
-        buttons.pack(fill="x", pady=(6, 0))
-
-        def apply_filter() -> None:
-            chosen = {value for value, variable in check_vars.items() if variable.get()}
-            if chosen == set(values):
-                self.filters.pop(column_index, None)
-            else:
-                self.filters[column_index] = chosen
-            popup.destroy()
-            self.render()
-
-        def clear_filter() -> None:
-            self.filters.pop(column_index, None)
-            popup.destroy()
-            self.render()
-
-        ttk.Button(buttons, text="この列を解除", command=clear_filter).pack(side="left")
-        ttk.Button(buttons, text="キャンセル", command=popup.destroy).pack(side="right")
-        ttk.Button(buttons, text="適用", command=apply_filter).pack(side="right", padx=4)
-        popup.bind("<Return>", lambda _event: apply_filter())
-        popup.bind("<Escape>", lambda _event: popup.destroy())
-        popup.grab_set()
+        self.table_filter.open_filter(column_index)
 
     def clear_filters(self) -> None:
-        if self.filters:
-            self.filters.clear()
-            self.render()
+        self.table_filter.clear_filters()
 
     def mark_dirty(self) -> None:
         self.dirty = True
@@ -327,11 +241,17 @@ class TemplateEditor(EditorFrame):
             return
         for row in self.rows:
             del row[index]
-        self.filters = {
+        remapped_filters = {
             old_index - 1 if old_index > index else old_index: values
             for old_index, values in self.filters.items()
             if old_index != index
         }
+        self.filters.clear()
+        self.filters.update(remapped_filters)
+        if self.table_filter.sort_column == index:
+            self.table_filter.sort_column = None
+        elif self.table_filter.sort_column is not None and self.table_filter.sort_column > index:
+            self.table_filter.sort_column -= 1
         self.mark_dirty()
         self.render()
 
@@ -367,12 +287,3 @@ class TemplateEditor(EditorFrame):
         self.dirty = False
         self.render()
         self.status.config(text=f"保存しました: {self.path}")
-
-
-def main() -> None:
-    root = Path(sys.argv[1]) if len(sys.argv) > 1 else default_templates_dir()
-    TemplateEditor(root).mainloop()
-
-
-if __name__ == "__main__":
-    main()

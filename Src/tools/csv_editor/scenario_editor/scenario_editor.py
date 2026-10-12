@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import argparse
 import csv
 from dataclasses import dataclass
 import io
@@ -11,7 +10,7 @@ import tkinter as tk
 import sys
 from tkinter import filedialog, messagebox, ttk
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from common.treeview_filter import TreeviewColumnFilter  # noqa: E402
@@ -328,7 +327,7 @@ def save_scenario_csv(
 
 import sys as _sys
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in _sys.path:
     _sys.path.insert(0, _TOOLS_DIR)
 from common.window_base import EditorFrame  # noqa: E402
@@ -985,25 +984,3 @@ class ScenarioEditor(EditorFrame):
             self.step_list.focus(target)
             self.step_list.see(target)
             self._show_step(target_index)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="シナリオCSVをGUIで表示・編集します。CSVをexeへドラッグ＆ドロップして起動できます。"
-    )
-    parser.add_argument(
-        "csv_file",
-        type=Path,
-        nargs="?",
-        help="表示するシナリオCSVファイル",
-    )
-    parser.add_argument(
-        "--scenario",
-        help="起動時に選択するシナリオID",
-    )
-    args = parser.parse_args()
-    ScenarioEditor(args.csv_file, args.scenario).mainloop()
-
-
-if __name__ == "__main__":
-    main()

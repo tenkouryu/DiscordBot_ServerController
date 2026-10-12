@@ -27,6 +27,7 @@ from .scenario import start as scenario_start
 from .scenario import template as scenario_template
 from .server import member_list as server_member_list
 from .server import export_json as server_export_json
+from .server import import_json as server_import_json
 from .server import role_add as server_role_add
 from .server import role_edit as server_role_edit
 from .server import role_get as server_role_get
@@ -186,6 +187,15 @@ def register_slash_commands(tree: app_commands.CommandTree[discord.Client]) -> N
     @server_group.command(name="export", description="ロール・メンバーロール・チャンネルをJSONで取得")
     async def server_export_command(interaction: discord.Interaction) -> None:
         await _run(interaction, server_export_json.main, "/server_export")
+
+    @server_group.command(name="import", description="変更前JSONを返し、エクスポート内容とサーバー設定を同期")
+    async def server_import_command(interaction: discord.Interaction, file: discord.Attachment) -> None:
+        await _run(
+            interaction,
+            server_import_json.main,
+            "/server_import",
+            attachments=[file],
+        )
 
     @channel_group.command(name="create", description="チャンネルを作成")
     async def channel_create_command(interaction: discord.Interaction, channel_type: str, channel_name: str, category_name: str | None = None) -> None:

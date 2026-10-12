@@ -9,13 +9,8 @@ import tkinter as tk
 
 import discord
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from role_logic import load_roles, permission_columns, save_roles
-    from permission_labels import permission_display, permission_label
-else:
-    from .permission_labels import permission_display, permission_label
-    from .role_logic import load_roles, permission_columns, save_roles
+from .permission_labels import permission_display, permission_label
+from .role_logic import load_roles, permission_columns, save_roles
 
 
 TRUE_VALUES = {"true", "1", "on", "yes"}
@@ -31,12 +26,12 @@ def default_path() -> Path:
         base = Path(sys.executable).resolve().parent
         bundled_template = base / "templates" / "set" / "input" / "server_role_template.csv"
         return bundled_template if bundled_template.exists() else base / "server_role_template.csv"
-    return Path(__file__).resolve().parents[2] / "templates" / "set" / "input" / "server_role_template.csv"
+    return Path(__file__).resolve().parents[3] / "templates" / "set" / "input" / "server_role_template.csv"
 
 
 import sys as _sys
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in _sys.path:
     _sys.path.insert(0, _TOOLS_DIR)
 from common.window_base import EditorFrame  # noqa: E402
@@ -455,12 +450,3 @@ class ServerRoleEditor(EditorFrame):
         return not self.dirty or messagebox.askyesno(
             "確認", "未保存の変更を破棄しますか?", parent=self
         )
-
-
-def main() -> None:
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else default_path()
-    ServerRoleEditor(path).mainloop()
-
-
-if __name__ == "__main__":
-    main()

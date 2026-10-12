@@ -3,23 +3,23 @@
 import sys
 import tkinter as tk
 from pathlib import Path
-from tkinter import messagebox, ttk
+from tkinter import ttk
 
 _TOOLS_DIR = str(Path(__file__).resolve().parents[1])
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 
-from channel_editor.channel_editor import ChannelEditor  # noqa: E402
-from channel_editor.channel_editor import default_path as default_channel_path  # noqa: E402
-from config_editor.config_editor import ConfigEditor  # noqa: E402
-from config_editor.config_logic import default_config_path  # noqa: E402
-from member_role_editor.member_role_editor import MemberRoleEditor  # noqa: E402
-from member_role_editor.member_role_editor import default_path as default_member_path  # noqa: E402
-from scenario_editor.scenario_editor import ScenarioEditor  # noqa: E402
-from server_role_editor.server_role_editor import ServerRoleEditor  # noqa: E402
-from server_role_editor.server_role_editor import default_path as default_role_path  # noqa: E402
-from template_editor.template_editor import TemplateEditor  # noqa: E402
-from template_editor.template_logic import default_templates_dir  # noqa: E402
+from csv_editor.channel_editor.channel_editor import ChannelEditor  # noqa: E402
+from csv_editor.channel_editor.channel_editor import default_path as default_channel_path  # noqa: E402
+from csv_editor.config_editor.config_editor import ConfigEditor  # noqa: E402
+from csv_editor.config_editor.config_logic import default_config_path  # noqa: E402
+from csv_editor.member_role_editor.member_role_editor import MemberRoleEditor  # noqa: E402
+from csv_editor.member_role_editor.member_role_editor import default_path as default_member_path  # noqa: E402
+from csv_editor.scenario_editor.scenario_editor import ScenarioEditor  # noqa: E402
+from csv_editor.server_role_editor.server_role_editor import ServerRoleEditor  # noqa: E402
+from csv_editor.server_role_editor.server_role_editor import default_path as default_role_path  # noqa: E402
+from csv_editor.template_editor.template_editor import TemplateEditor  # noqa: E402
+from csv_editor.template_editor.template_logic import default_templates_dir  # noqa: E402
 
 APP_TITLE = "Bot設定エディタ（統合版）"
 
@@ -64,7 +64,7 @@ class CsvEditorApp(tk.Tk):
         return True
 
     def on_close(self) -> None:
-        for label, editor in self.editors:
+        for _label, editor in self.editors:
             if getattr(editor, "dirty", False):
                 self.notebook.select(editor)
                 if not self.can_close(editor):

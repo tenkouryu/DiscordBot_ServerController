@@ -1,23 +1,17 @@
 ﻿from __future__ import annotations
 
-import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from config_logic import (default_config_path, is_secret_key, load_config, save_config,
-                              text_to_value, value_to_text)
-else:
-    from .config_logic import (default_config_path, is_secret_key, load_config, save_config,
-                               text_to_value, value_to_text)
+from .config_logic import (default_config_path, is_secret_key, load_config, save_config,
+                           text_to_value, value_to_text)
 
 
 import sys as _sys
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in _sys.path:
     _sys.path.insert(0, _TOOLS_DIR)
 from common.window_base import EditorFrame  # noqa: E402
@@ -139,12 +133,3 @@ class ConfigEditor(EditorFrame):
             return
         self.original = data
         messagebox.showinfo("保存", "保存しました。Botを再起動すると反映されます。")
-
-
-def main() -> None:
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else default_config_path()
-    ConfigEditor(path).mainloop()
-
-
-if __name__ == "__main__":
-    main()

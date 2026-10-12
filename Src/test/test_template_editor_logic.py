@@ -3,7 +3,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from tools.template_editor.template_logic import (
+from tools.csv_editor.template_editor.template_logic import (
     list_template_files,
     load_table,
     normalize,

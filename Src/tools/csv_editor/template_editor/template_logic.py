@@ -15,7 +15,7 @@ def default_templates_dir() -> Path:
     if getattr(sys, "frozen", False):
         base = Path(sys.executable).resolve().parent
         return base / "templates" if (base / "templates").is_dir() else base
-    return Path(__file__).resolve().parents[2] / "templates"
+    return Path(__file__).resolve().parents[3] / "templates"
 
 
 EXCLUDED_DIRS = {

@@ -6,31 +6,17 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 import tkinter as tk
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from member_logic import (
-        ACTIONS,
-        MemberTable,
-        add_role_column,
-        load_table,
-        new_row,
-        remove_last_role_column,
-        role_columns,
-        save_table,
-        validate_row,
-    )
-else:
-    from .member_logic import (
-        ACTIONS,
-        MemberTable,
-        add_role_column,
-        load_table,
-        new_row,
-        remove_last_role_column,
-        role_columns,
-        save_table,
-        validate_row,
-    )
+from .member_logic import (
+    ACTIONS,
+    MemberTable,
+    add_role_column,
+    load_table,
+    new_row,
+    remove_last_role_column,
+    role_columns,
+    save_table,
+    validate_row,
+)
 
 APP_TITLE = "メンバーロールCSVエディタ"
 
@@ -41,12 +27,12 @@ def default_path() -> Path:
         base = Path(sys.executable).resolve().parent
         bundled = base / "templates" / "set" / "input" / name
         return bundled if bundled.exists() else base / name
-    return Path(__file__).resolve().parents[2] / "templates" / "set" / "input" / name
+    return Path(__file__).resolve().parents[3] / "templates" / "set" / "input" / name
 
 
 import sys as _sys
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in _sys.path:
     _sys.path.insert(0, _TOOLS_DIR)
 from common.window_base import EditorFrame  # noqa: E402
@@ -302,12 +288,3 @@ class MemberRoleEditor(EditorFrame):
         return not self.dirty or messagebox.askyesno(
             "確認", "未保存の変更を破棄しますか?", parent=self
         )
-
-
-def main() -> None:
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else default_path()
-    MemberRoleEditor(path).mainloop()
-
-
-if __name__ == "__main__":
-    main()

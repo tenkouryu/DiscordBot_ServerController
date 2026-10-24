@@ -5,13 +5,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.server_export_editor.json_editor_logic import (
+from tools.server_config_editor.server_export_editor.json_editor_logic import (
     format_export_json,
     load_export_json,
     parse_export_json,
     save_export_json,
 )
-from tools.server_export_editor.server_export_editor import _new_item, _sort_value
+from tools.server_config_editor.server_export_editor.server_export_editor import _new_item, _sort_value
 
 
 SAMPLE = {

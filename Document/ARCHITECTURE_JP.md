@@ -6,7 +6,7 @@ Discordサーバーの運用を支援するBotです。メンバー・ロール�
 
 Botのエントリーポイントは `Src/bot_main.py` です。ルートの `run_bot.cmd` からも起動できます。
 
-`Src/tools/csv_editor/` の統合CSVエディターは、設定・テンプレート・サーバーロール・メンバーロール・チャンネル・シナリオの編集機能を1つのアプリで提供します。サーバーエクスポートJSONエディターは別ツールです。
+`Src/tools/server_config_editor/` の「サーバー設定統合エディター」は、設定・テンプレート・サーバーロール・メンバーロール・チャンネル・シナリオ・リマインダー・サーバーエクスポートJSONの編集機能をタブで提供します。
 
 ## 2. ディレクトリ構成
 
@@ -22,8 +22,7 @@ Src/
     get/input/              Get用CSV入力
     get/result/              Get結果の分類
   test/                    テスト
-  tools/csv_editor/        設定・CSV統合編集GUI(tkinter)
-  tools/server_export_editor/ サーバーエクスポートJSON編集GUI(tkinter)
+  tools/server_config_editor/ 設定・CSV・サーバーエクスポート統合GUI(tkinter)
 
 Document/
   README_JP.md / README_EN.md
@@ -48,11 +47,32 @@ Discordイベントとコマンドの入口です。`on_ready`、メッセージ
 
 ### `Src/config/`
 
-`config.json` にBot設定を保存します。`scenario_definitions.json` はシナリオ定義、`scenario_states.json` はサーバーごとの進行状態を保持します。
+`config.json` にBot設定を保存します。`scenario_definitions.json` はシナリオ定義、`scenario_states.json` はサーバーごとの進行状態を保持します。`reminders.json` は予約リマインド、`reminder_log.jsonl` は送信結果の履歴を保持します。
+
+### リマインド
+
+Bot起動中は30秒ごとに `config/reminders.json` を確認し、予定時刻を過ぎたリマインドを指定チャンネルへ1回送信します。日時は `+09:00` 付きのISO 8601形式で指定し、ユーザー・ロールのメンションはIDで登録します。送信成功後は予定を設定から削除し、`config/reminder_log.jsonl` に結果を記録します。Bot停止中に過ぎた予定は、再起動後に送信されます。
+
+```json
+{
+  "reminders": [
+    {
+      "id": "meeting-20261030",
+      "datetime": "2026-10-30T19:00:00+09:00",
+      "channel_id": "123456789012345678",
+      "content": "ミーティングを開始します。",
+      "mention_users": ["234567890123456789"],
+      "mention_roles": ["345678901234567890"]
+    }
+  ]
+}
+```
+
+`id` は予定ごとに一意にし、送信済みのIDを再利用しないでください。メンション欄は不要なら空配列、または省略できます。送信に失敗した予定は設定に残り、次の確認時に再試行します。
 
 ### `Src/templates/` と `Src/tools/`
 
-CSV等の成果物を用途別に `Src/templates/set/input/`、`set/response/`、`get/input/`、`get/result/` に分類しています。Set応答とGet結果は実行時に各出力フォルダへ保存し、Discordにも添付します。生成ファイルはGit管理対象外です。CSVと設定の編集は `Src/tools/csv_editor/csv_editor.py` の統合アプリから行います。
+CSV等の成果物を用途別に `Src/templates/set/input/`、`set/response/`、`get/input/`、`get/result/` に分類しています。Set応答とGet結果は実行時に各出力フォルダへ保存し、Discordにも添付します。生成ファイルはGit管理対象外です。CSVと設定の編集は `Src/tools/server_config_editor/server_config_editor.py` の統合アプリから行います。
 
 ## 4. コマンド処理
 

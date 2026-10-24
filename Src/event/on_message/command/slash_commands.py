@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 from typing import Any
 
 import discord
@@ -35,6 +36,13 @@ from .server import role_permissions as server_role_permissions
 from .server import role_remove as server_role_remove
 from .server import role_set as server_role_set
 from .server import role_template as server_role_template
+from function.reminder.reminder_service import (
+    add_reminder,
+    create_reminder_csv_template,
+    delete_reminder,
+    register_reminders_csv_for_guild,
+)
+from function.file.path_service import application_root
 
 
 class _InteractionChannel:
@@ -118,6 +126,12 @@ def register_slash_commands(tree: app_commands.CommandTree[discord.Client]) -> N
     channel_group = app_commands.Group(name="channel", description="チャンネル操作")
     chat_group = app_commands.Group(name="chat", description="添付ファイル操作")
     scenario_group = app_commands.Group(name="scenario", description="シナリオ操作")
+    reminder_group = app_commands.Group(
+        name="reminder",
+        description="リマインダー操作",
+        default_permissions=discord.Permissions(manage_guild=True),
+        guild_only=True,
+    )
 
     @tree.command(name="help", description="利用可能なコマンドを表示")
     async def help_command(interaction: discord.Interaction) -> None:
@@ -251,8 +265,169 @@ def register_slash_commands(tree: app_commands.CommandTree[discord.Client]) -> N
     async def scenario_export_command(interaction: discord.Interaction) -> None:
         await _run(interaction, scenario_export.main, "/scenario_export")
 
+    @reminder_group.command(name="add", description="リマインダーを登録")
+    @app_commands.describe(
+        datetime_text="日本時間: YYYY-MM-DD HH:MM または +09:00 付きISO 8601",
+        channel="通知先チャンネル",
+        content="通知内容",
+        mention_user="メンションするユーザー（省略可）",
+        mention_role="メンションするロール（省略可）",
+    )
+    async def reminder_add_command(
+        interaction: discord.Interaction,
+        datetime_text: str,
+        channel: discord.TextChannel,
+        content: str,
+        mention_user: discord.Member | None = None,
+        mention_role: discord.Role | None = None,
+    ) -> None:
+        permissions = interaction.permissions
+        if not (permissions.manage_guild or permissions.administrator):
+            await interaction.response.send_message(
+                "リマインダーを管理するには「サーバーの管理」権限が必要です。",
+                ephemeral=True,
+            )
+            return
+
+        reminders_path = application_root() / "config" / "reminders.json"
+        try:
+            reminder = add_reminder(
+                reminders_path,
+                datetime_text,
+                channel.id,
+                content,
+                mention_users=[mention_user.id] if mention_user else [],
+                mention_roles=[mention_role.id] if mention_role else [],
+            )
+        except (OSError, ValueError) as error:
+            await interaction.response.send_message(
+                f"リマインダーを登録できませんでした: {error}",
+                ephemeral=True,
+            )
+            return
+
+        await interaction.response.send_message(
+            (
+                f"リマインダーを登録しました（ID: `{reminder['id']}`）。"
+                f" 通知予定: {reminder['datetime']}"
+            ),
+            ephemeral=True,
+        )
+
+    @reminder_group.command(name="remove", description="リマインダーを削除")
+    @app_commands.describe(reminder_id="登録時に表示されたリマインダーID")
+    async def reminder_remove_command(
+        interaction: discord.Interaction,
+        reminder_id: str,
+    ) -> None:
+        permissions = interaction.permissions
+        if not (permissions.manage_guild or permissions.administrator):
+            await interaction.response.send_message(
+                "リマインダーを管理するには「サーバーの管理」権限が必要です。",
+                ephemeral=True,
+            )
+            return
+
+        reminders_path = application_root() / "config" / "reminders.json"
+        try:
+            removed = delete_reminder(reminders_path, reminder_id)
+        except (OSError, ValueError) as error:
+            await interaction.response.send_message(
+                f"リマインダーを削除できませんでした: {error}",
+                ephemeral=True,
+            )
+            return
+
+        if removed is None:
+            await interaction.response.send_message(
+                f"リマインダー `{reminder_id}` が見つかりません。",
+                ephemeral=True,
+            )
+            return
+        await interaction.response.send_message(
+            f"リマインダー `{reminder_id}` を削除しました。",
+            ephemeral=True,
+        )
+
+    @reminder_group.command(name="template", description="リマインダー登録CSVテンプレート")
+    async def reminder_template_command(interaction: discord.Interaction) -> None:
+        permissions = interaction.permissions
+        if not (permissions.manage_guild or permissions.administrator):
+            await interaction.response.send_message(
+                "リマインダーを管理するには「サーバーの管理」権限が必要です。",
+                ephemeral=True,
+            )
+            return
+        await interaction.response.send_message(
+            "リマインダー登録用CSVテンプレートです。",
+            file=discord.File(
+                io.BytesIO(create_reminder_csv_template()),
+                filename="reminder_template.csv",
+            ),
+            ephemeral=True,
+        )
+
+    @reminder_group.command(name="import", description="CSVからリマインダーを一括登録")
+    @app_commands.describe(file="日時・通知先・内容を記載したCSVファイル")
+    async def reminder_import_command(
+        interaction: discord.Interaction,
+        file: discord.Attachment,
+    ) -> None:
+        permissions = interaction.permissions
+        if not (permissions.manage_guild or permissions.administrator):
+            await interaction.response.send_message(
+                "リマインダーを管理するには「サーバーの管理」権限が必要です。",
+                ephemeral=True,
+            )
+            return
+        if interaction.guild is None:
+            await interaction.response.send_message(
+                "このコマンドはサーバー内で使用してください。",
+                ephemeral=True,
+            )
+            return
+        if not file.filename.lower().endswith(".csv"):
+            await interaction.response.send_message(
+                "CSVファイル（.csv）を添付してください。",
+                ephemeral=True,
+            )
+            return
+        if file.size > 1_000_000:
+            await interaction.response.send_message(
+                "CSVファイルは1MB以下にしてください。",
+                ephemeral=True,
+            )
+            return
+
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        try:
+            csv_text = (await file.read()).decode("utf-8-sig")
+            reminders_path = application_root() / "config" / "reminders.json"
+            added = await register_reminders_csv_for_guild(
+                reminders_path,
+                csv_text,
+                interaction.guild,
+            )
+        except (
+            OSError,
+            UnicodeDecodeError,
+            ValueError,
+            discord.DiscordException,
+        ) as error:
+            await interaction.followup.send(
+                f"CSVを登録できませんでした: {error}",
+                ephemeral=True,
+            )
+            return
+
+        await interaction.followup.send(
+            f"CSVから{len(added)}件のリマインダーを登録しました。",
+            ephemeral=True,
+        )
+
     tree.add_command(member_group)
     tree.add_command(server_group)
     tree.add_command(channel_group)
     tree.add_command(chat_group)
     tree.add_command(scenario_group)
+    tree.add_command(reminder_group)

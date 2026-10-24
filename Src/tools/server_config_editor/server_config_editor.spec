@@ -2,8 +2,8 @@
 
 
 a = Analysis(
-    ["csv_editor.py"],
-    pathex=[".."],
+    ["server_config_editor.py"],
+    pathex=["..", "../.."],
     binaries=[],
     datas=[],
     hiddenimports=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name="csv_editor",
+    name="server_config_editor",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

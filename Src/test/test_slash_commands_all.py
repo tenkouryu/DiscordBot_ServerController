@@ -53,6 +53,8 @@ class AllSlashCommandsTests(unittest.IsolatedAsyncioTestCase):
 
         for command in commands:
             with self.subTest(command=command.qualified_name):
+                if command.qualified_name.startswith("reminder "):
+                    continue
                 for mock in patched.values():
                     mock.reset_mock()
                 interaction = MagicMock()

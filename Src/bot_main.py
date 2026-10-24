@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 import discord
@@ -9,6 +10,7 @@ from event.on_member_join import on_member_join as on_member_join_event
 from event.on_voice_state_update import on_voice_state_update as on_voice_state_update_event
 from event.on_message.command.slash_commands import register_slash_commands
 from function.file.path_service import application_root
+from function.reminder.reminder_service import run_reminder_scheduler
 from function.security.single_instance import single_instance
 
 
@@ -30,16 +32,23 @@ client = discord.Client(intents=intents_set)
 command_tree = app_commands.CommandTree(client)
 register_slash_commands(command_tree)
 commands_synced = False
+reminder_task: asyncio.Task[None] | None = None
 
 #----------イベントハンドラ群はここ----------
 """Bot起動時に実行されるイベントハンドラ"""
 @client.event
 async def on_ready() -> None:
-    global commands_synced
+    global commands_synced, reminder_task
     if not commands_synced:
         await command_tree.sync()
         commands_synced = True
     await on_ready_event.on_ready_main(client)
+    if reminder_task is None or reminder_task.done():
+        reminders_path = PROJECT_ROOT / "config" / "reminders.json"
+        reminder_log_path = PROJECT_ROOT / "config" / "reminder_log.jsonl"
+        reminder_task = asyncio.create_task(
+            run_reminder_scheduler(client, reminders_path, reminder_log_path)
+        )
 
 """メッセージ受信時に実行されるイベントハンドラ"""
 @client.event

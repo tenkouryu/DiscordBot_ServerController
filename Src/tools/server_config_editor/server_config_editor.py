@@ -9,19 +9,22 @@ _TOOLS_DIR = str(Path(__file__).resolve().parents[1])
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 
-from csv_editor.channel_editor.channel_editor import ChannelEditor  # noqa: E402
-from csv_editor.channel_editor.channel_editor import default_path as default_channel_path  # noqa: E402
-from csv_editor.config_editor.config_editor import ConfigEditor  # noqa: E402
-from csv_editor.config_editor.config_logic import default_config_path  # noqa: E402
-from csv_editor.member_role_editor.member_role_editor import MemberRoleEditor  # noqa: E402
-from csv_editor.member_role_editor.member_role_editor import default_path as default_member_path  # noqa: E402
-from csv_editor.scenario_editor.scenario_editor import ScenarioEditor  # noqa: E402
-from csv_editor.server_role_editor.server_role_editor import ServerRoleEditor  # noqa: E402
-from csv_editor.server_role_editor.server_role_editor import default_path as default_role_path  # noqa: E402
-from csv_editor.template_editor.template_editor import TemplateEditor  # noqa: E402
-from csv_editor.template_editor.template_logic import default_templates_dir  # noqa: E402
+from server_config_editor.channel_editor.channel_editor import ChannelEditor  # noqa: E402
+from server_config_editor.channel_editor.channel_editor import default_path as default_channel_path  # noqa: E402
+from server_config_editor.config_editor.config_editor import ConfigEditor  # noqa: E402
+from server_config_editor.config_editor.config_logic import default_config_path  # noqa: E402
+from server_config_editor.member_role_editor.member_role_editor import MemberRoleEditor  # noqa: E402
+from server_config_editor.member_role_editor.member_role_editor import default_path as default_member_path  # noqa: E402
+from server_config_editor.reminder_editor.reminder_editor import ReminderEditor  # noqa: E402
+from server_config_editor.reminder_editor.reminder_logic import default_path as default_reminder_path  # noqa: E402
+from server_config_editor.scenario_editor.scenario_editor import ScenarioEditor  # noqa: E402
+from server_config_editor.server_role_editor.server_role_editor import ServerRoleEditor  # noqa: E402
+from server_config_editor.server_role_editor.server_role_editor import default_path as default_role_path  # noqa: E402
+from server_config_editor.template_editor.template_editor import TemplateEditor  # noqa: E402
+from server_config_editor.template_editor.template_logic import default_templates_dir  # noqa: E402
+from server_config_editor.server_export_editor.server_export_editor import ServerExportJsonEditor  # noqa: E402
 
-APP_TITLE = "Bot設定エディタ（統合版）"
+APP_TITLE = "サーバー設定統合エディター"
 
 
 def default_scenario_path() -> Path | None:
@@ -29,7 +32,7 @@ def default_scenario_path() -> Path | None:
     return candidate if candidate.exists() else None
 
 
-class CsvEditorApp(tk.Tk):
+class ServerConfigEditorApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title(APP_TITLE)
@@ -45,6 +48,14 @@ class CsvEditorApp(tk.Tk):
         self.add_tab("メンバーロール", MemberRoleEditor(default_member_path(), self.notebook))
         self.add_tab("チャンネル", ChannelEditor(default_channel_path(), self.notebook))
         self.add_tab("シナリオ", ScenarioEditor(default_scenario_path(), None, self.notebook))
+        self.add_tab(
+            "リマインダー",
+            ReminderEditor(default_reminder_path(), self.notebook),
+        )
+        self.add_tab(
+            "サーバーエクスポート",
+            ServerExportJsonEditor(master=self.notebook),
+        )
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def add_tab(self, label: str, editor: tk.Misc) -> None:
@@ -73,7 +84,7 @@ class CsvEditorApp(tk.Tk):
 
 
 def main() -> None:
-    CsvEditorApp().mainloop()
+    ServerConfigEditorApp().mainloop()
 
 
 if __name__ == "__main__":

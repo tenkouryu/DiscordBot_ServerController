@@ -45,7 +45,12 @@ def get_command_help_text() -> str:
         "/scenario start シナリオID [開始step] - シナリオを開始\n"
         "/scenario list - 登録済みシナリオ一覧\n"
         "/scenario delete シナリオID - シナリオを削除\n"
-        "/scenario export - シナリオをCSVで出力"
+        "/scenario export - シナリオをCSVで出力\n"
+        "/reminder add 日時 チャンネル 内容 [ユーザー] [ロール] - リマインダーを登録\n"
+        "/reminder remove リマインダーID - リマインダーを削除\n"
+        "/reminder template - リマインダー登録CSVテンプレート\n"
+        "/reminder import + CSVファイル - CSVからリマインダーを一括登録\n"
+        "リマインダー操作にはサーバー管理権限が必要です。"
     )
 
 

@@ -7,16 +7,13 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import Any, Callable
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from json_editor_logic import load_export_json, parse_export_json, save_export_json
-else:
-    from .json_editor_logic import load_export_json, parse_export_json, save_export_json
+from .json_editor_logic import load_export_json, parse_export_json, save_export_json
 
-_TOOLS_DIR = str(Path(__file__).resolve().parents[1])
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2])
 if _TOOLS_DIR not in sys.path:
     sys.path.insert(0, _TOOLS_DIR)
 from common.treeview_filter import TreeviewColumnFilter  # noqa: E402
+from common.window_base import EditorFrame  # noqa: E402
 
 APP_TITLE = "サーバーエクスポートJSONエディター"
 SECTION_OPTIONS = (
@@ -649,9 +646,13 @@ class SectionEditor(ttk.Frame):
         self.refresh(next_index)
 
 
-class ServerExportJsonEditor(tk.Tk):
-    def __init__(self, path: Path | None = None) -> None:
-        super().__init__()
+class ServerExportJsonEditor(EditorFrame):
+    def __init__(
+        self,
+        path: Path | None = None,
+        master: tk.Misc | None = None,
+    ) -> None:
+        super().__init__(master)
         self.path = path
         self.dirty = False
         self.document: dict[str, Any] | None = None
@@ -780,11 +781,3 @@ class ServerExportJsonEditor(tk.Tk):
         if self.confirm_discard():
             self.destroy()
 
-
-def main() -> None:
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else None
-    ServerExportJsonEditor(path).mainloop()
-
-
-if __name__ == "__main__":
-    main()

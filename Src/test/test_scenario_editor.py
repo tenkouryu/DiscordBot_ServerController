@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.csv_editor.scenario_editor.scenario_editor import (
+from tools.server_config_editor.scenario_editor.scenario_editor import (
     _read_scenario_csv,
     filter_emoji_options,
     load_scenarios,

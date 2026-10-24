@@ -1,1 +1,428 @@
-{}
+{
+  "team_match": [
+    {
+      "step": 1,
+      "instruction": "@チームA @チームB、先鋒戦の対戦カードがマッチングしたか確認してください。確認できたら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "先鋒戦のマッチングを確認しました。試合開始の合図を待ちます。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 2
+        }
+      }
+    },
+    {
+      "step": 2,
+      "instruction": "先鋒戦の試合開始の合図を送ってください。開始できるときに🏁を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "🏁",
+      "response": "先鋒戦を開始してください！",
+      "branch_map": {
+        "🏁": {
+          "scenario_id": "team_match",
+          "step": 3
+        }
+      }
+    },
+    {
+      "step": 3,
+      "instruction": "先鋒戦が完了するまで待機します。試合が完了したら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "先鋒戦が完了しました。勝敗を判定します。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 4
+        }
+      }
+    },
+    {
+      "step": 4,
+      "instruction": "先鋒戦の勝者を選択してください。🅰️ @チームA 勝利 / 🅱️ @チームB 勝利",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "先鋒戦の勝敗を受け付けました。敗者が次鋒戦の先攻・後攻を選択します。",
+      "branch_map": {
+        "🅰️": {
+          "scenario_id": "team_match",
+          "step": 5
+        },
+        "🅱️": {
+          "scenario_id": "team_match",
+          "step": 6
+        }
+      }
+    },
+    {
+      "step": 5,
+      "instruction": "@チームB（敗者）が次の次鋒戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームBの選択を受け付けました。次鋒戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 7
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 7
+        }
+      }
+    },
+    {
+      "step": 6,
+      "instruction": "@チームA（敗者）が次の次鋒戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームAの選択を受け付けました。次鋒戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 7
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 7
+        }
+      }
+    },
+    {
+      "step": 7,
+      "instruction": "@チームA @チームB、次鋒戦の対戦カードがマッチングしたか確認してください。確認できたら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "次鋒戦のマッチングを確認しました。試合開始の合図を待ちます。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 8
+        }
+      }
+    },
+    {
+      "step": 8,
+      "instruction": "次鋒戦の試合開始の合図を送ってください。開始できるときに🏁を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "🏁",
+      "response": "次鋒戦を開始してください！",
+      "branch_map": {
+        "🏁": {
+          "scenario_id": "team_match",
+          "step": 9
+        }
+      }
+    },
+    {
+      "step": 9,
+      "instruction": "次鋒戦が完了するまで待機します。試合が完了したら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "次鋒戦が完了しました。勝敗を判定します。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 10
+        }
+      }
+    },
+    {
+      "step": 10,
+      "instruction": "次鋒戦の勝者を選択してください。🅰️ @チームA 勝利 / 🅱️ @チームB 勝利",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "次鋒戦の勝敗を受け付けました。敗者が中堅戦の先攻・後攻を選択します。",
+      "branch_map": {
+        "🅰️": {
+          "scenario_id": "team_match",
+          "step": 11
+        },
+        "🅱️": {
+          "scenario_id": "team_match",
+          "step": 12
+        }
+      }
+    },
+    {
+      "step": 11,
+      "instruction": "@チームB（敗者）が次の中堅戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームBの選択を受け付けました。中堅戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 13
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 13
+        }
+      }
+    },
+    {
+      "step": 12,
+      "instruction": "@チームA（敗者）が次の中堅戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームAの選択を受け付けました。中堅戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 13
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 13
+        }
+      }
+    },
+    {
+      "step": 13,
+      "instruction": "@チームA @チームB、中堅戦の対戦カードがマッチングしたか確認してください。確認できたら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "中堅戦のマッチングを確認しました。試合開始の合図を待ちます。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 14
+        }
+      }
+    },
+    {
+      "step": 14,
+      "instruction": "中堅戦の試合開始の合図を送ってください。開始できるときに🏁を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "🏁",
+      "response": "中堅戦を開始してください！",
+      "branch_map": {
+        "🏁": {
+          "scenario_id": "team_match",
+          "step": 15
+        }
+      }
+    },
+    {
+      "step": 15,
+      "instruction": "中堅戦が完了するまで待機します。試合が完了したら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "中堅戦が完了しました。勝敗を判定します。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 16
+        }
+      }
+    },
+    {
+      "step": 16,
+      "instruction": "中堅戦の勝者を選択してください。🅰️ @チームA 勝利 / 🅱️ @チームB 勝利",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "中堅戦の勝敗を受け付けました。敗者が副将戦の先攻・後攻を選択します。",
+      "branch_map": {
+        "🅰️": {
+          "scenario_id": "team_match",
+          "step": 17
+        },
+        "🅱️": {
+          "scenario_id": "team_match",
+          "step": 18
+        }
+      }
+    },
+    {
+      "step": 17,
+      "instruction": "@チームB（敗者）が次の副将戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームBの選択を受け付けました。副将戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 19
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 19
+        }
+      }
+    },
+    {
+      "step": 18,
+      "instruction": "@チームA（敗者）が次の副将戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームAの選択を受け付けました。副将戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 19
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 19
+        }
+      }
+    },
+    {
+      "step": 19,
+      "instruction": "@チームA @チームB、副将戦の対戦カードがマッチングしたか確認してください。確認できたら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "副将戦のマッチングを確認しました。試合開始の合図を待ちます。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 20
+        }
+      }
+    },
+    {
+      "step": 20,
+      "instruction": "副将戦の試合開始の合図を送ってください。開始できるときに🏁を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "🏁",
+      "response": "副将戦を開始してください！",
+      "branch_map": {
+        "🏁": {
+          "scenario_id": "team_match",
+          "step": 21
+        }
+      }
+    },
+    {
+      "step": 21,
+      "instruction": "副将戦が完了するまで待機します。試合が完了したら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "副将戦が完了しました。勝敗を判定します。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 22
+        }
+      }
+    },
+    {
+      "step": 22,
+      "instruction": "副将戦の勝者を選択してください。🅰️ @チームA 勝利 / 🅱️ @チームB 勝利",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "副将戦の勝敗を受け付けました。敗者が大将戦の先攻・後攻を選択します。",
+      "branch_map": {
+        "🅰️": {
+          "scenario_id": "team_match",
+          "step": 23
+        },
+        "🅱️": {
+          "scenario_id": "team_match",
+          "step": 24
+        }
+      }
+    },
+    {
+      "step": 23,
+      "instruction": "@チームB（敗者）が次の大将戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームBの選択を受け付けました。大将戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 25
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 25
+        }
+      }
+    },
+    {
+      "step": 24,
+      "instruction": "@チームA（敗者）が次の大将戦の順番を選択してください。⚔️ 先攻 / 🛡️ 後攻",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "@チームAの選択を受け付けました。大将戦のマッチングを確認します。",
+      "branch_map": {
+        "⚔️": {
+          "scenario_id": "team_match",
+          "step": 25
+        },
+        "🛡️": {
+          "scenario_id": "team_match",
+          "step": 25
+        }
+      }
+    },
+    {
+      "step": 25,
+      "instruction": "@チームA @チームB、大将戦の対戦カードがマッチングしたか確認してください。確認できたら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "大将戦のマッチングを確認しました。試合開始の合図を待ちます。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 26
+        }
+      }
+    },
+    {
+      "step": 26,
+      "instruction": "大将戦の試合開始の合図を送ってください。開始できるときに🏁を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "🏁",
+      "response": "大将戦を開始してください！",
+      "branch_map": {
+        "🏁": {
+          "scenario_id": "team_match",
+          "step": 27
+        }
+      }
+    },
+    {
+      "step": 27,
+      "instruction": "大将戦が完了するまで待機します。試合が完了したら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "大将戦が完了しました。勝敗を判定します。",
+      "branch_map": {
+        "✅": {
+          "scenario_id": "team_match",
+          "step": 28
+        }
+      }
+    },
+    {
+      "step": 28,
+      "instruction": "大将戦の勝者を選択してください。🅰️ @チームA 勝利 / 🅱️ @チームB 勝利",
+      "completion_type": "reaction",
+      "completion_value": "*",
+      "response": "5試合が終了しました。結果を確認してください。",
+      "branch_map": {
+        "🅰️": {
+          "scenario_id": "team_match",
+          "step": 29
+        },
+        "🅱️": {
+          "scenario_id": "team_match",
+          "step": 29
+        }
+      }
+    },
+    {
+      "step": 29,
+      "instruction": "5試合の結果を確認できたら✅を押してください。",
+      "completion_type": "reaction",
+      "completion_value": "✅",
+      "response": "チーム対抗戦が完了しました。",
+      "branch_map": {}
+    }
+  ]
+}

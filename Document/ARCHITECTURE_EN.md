@@ -6,7 +6,7 @@ This Discord bot supports server operations, including member, role, and channel
 
 The entry point is `Src/bot_main.py`. The root-level `run_bot.cmd` can also launch the bot.
 
-The integrated CSV editor under `Src/tools/csv_editor/` provides configuration, template, server-role, member-role, channel, and scenario editing in one application. The server export JSON editor is a separate tool.
+The Server Configuration Editor under `Src/tools/server_config_editor/` provides configuration, template, server-role, member-role, channel, scenario, reminder, and server-export JSON editing in one tabbed application.
 
 ## 2. Directory Layout
 
@@ -22,8 +22,7 @@ Src/
     get/input/              Get CSV inputs
     get/result/              Get result category
   test/                    tests
-  tools/csv_editor/        integrated CSV/settings editing GUI (tkinter)
-  tools/server_export_editor/ server export JSON editor (tkinter)
+  tools/server_config_editor/ integrated configuration/CSV/server-export GUI (tkinter)
 
 Document/
   README_JP.md / README_EN.md
@@ -48,11 +47,32 @@ Shared processing called by events and commands, including scenario management, 
 
 ### `Src/config/`
 
-`config.json` stores bot settings. `scenario_definitions.json` stores scenario definitions, and `scenario_states.json` stores per-server progress.
+`config.json` stores bot settings. `scenario_definitions.json` stores scenario definitions, and `scenario_states.json` stores per-server progress. `reminders.json` stores scheduled reminders, and `reminder_log.jsonl` stores delivery history.
+
+### Reminders
+
+While the bot is running, it checks `config/reminders.json` every 30 seconds and sends due reminders once to their configured channels. Datetimes must use ISO 8601 with the `+09:00` offset; user and role mentions are configured by ID. After a successful send, the reminder is removed from the configuration and recorded in `config/reminder_log.jsonl`. Reminders that became due while the bot was offline are sent after it restarts.
+
+```json
+{
+  "reminders": [
+    {
+      "id": "meeting-20261030",
+      "datetime": "2026-10-30T19:00:00+09:00",
+      "channel_id": "123456789012345678",
+      "content": "The meeting is starting.",
+      "mention_users": ["234567890123456789"],
+      "mention_roles": ["345678901234567890"]
+    }
+  ]
+}
+```
+
+Use a unique `id` for each reminder and do not reuse IDs from sent reminders. Mention arrays can be omitted when unused. Failed reminders stay in the configuration and are retried.
 
 ### `Src/templates/` and `Src/tools/`
 
-CSV artifacts are grouped under `Src/templates/set/input/`, `set/response/`, `get/input/`, and `get/result/`. Set responses and Get results are generated at runtime, saved in their output folders, and sent as Discord attachments. Generated files are excluded from Git. CSV and settings editing is launched through the integrated `Src/tools/csv_editor/csv_editor.py` application.
+CSV artifacts are grouped under `Src/templates/set/input/`, `set/response/`, `get/input/`, and `get/result/`. Set responses and Get results are generated at runtime, saved in their output folders, and sent as Discord attachments. Generated files are excluded from Git. CSV and settings editing is launched through the integrated `Src/tools/server_config_editor/server_config_editor.py` application.
 
 ## 4. Command Flow
 

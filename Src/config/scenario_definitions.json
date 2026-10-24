@@ -81,11 +81,11 @@
       "branch_map": {
         "🅰️": {
           "scenario_id": "team_match",
-          "step": 6
+          "step": 5
         },
         "🅱️": {
           "scenario_id": "team_match",
-          "step": 5
+          "step": 6
         }
       }
     },
@@ -171,11 +171,11 @@
       "branch_map": {
         "🅰️": {
           "scenario_id": "team_match",
-          "step": 12
+          "step": 11
         },
         "🅱️": {
           "scenario_id": "team_match",
-          "step": 11
+          "step": 12
         }
       }
     },
@@ -261,11 +261,11 @@
       "branch_map": {
         "🅰️": {
           "scenario_id": "team_match",
-          "step": 18
+          "step": 17
         },
         "🅱️": {
           "scenario_id": "team_match",
-          "step": 17
+          "step": 18
         }
       }
     },
@@ -351,11 +351,11 @@
       "branch_map": {
         "🅰️": {
           "scenario_id": "team_match",
-          "step": 24
+          "step": 23
         },
         "🅱️": {
           "scenario_id": "team_match",
-          "step": 23
+          "step": 24
         }
       }
     },

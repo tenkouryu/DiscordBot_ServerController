@@ -62,31 +62,47 @@ The exe version does not require Python or discord.py. Generated CSV and ZIP fil
 
 Do not expose the bot token, and avoid committing the configuration file to Git.
 
+### Reminders
+
+Add reminders to `Src/config/reminders.json` (or `release/config/reminders.json` for the exe). While the bot is running, it checks the file every 30 seconds and sends each reminder to its configured channel. Specify Japan time with an ISO 8601 `+09:00` offset, and use Discord IDs for the channel and mention targets.
+
+```json
+{
+  "reminders": [
+    {
+      "id": "meeting-20261030",
+      "datetime": "2026-10-30T19:00:00+09:00",
+      "channel_id": "123456789012345678",
+      "content": "The meeting is starting.",
+      "mention_users": ["234567890123456789"],
+      "mention_roles": ["345678901234567890"]
+    }
+  ]
+}
+```
+
+Each `id` must be unique. Failed reminders remain in the configuration for retry. Successfully sent reminders are removed, and delivery results are appended to `config/reminder_log.jsonl`.
+
+Users with Manage Server permission can use `/reminder add` to schedule a reminder and `/reminder remove` with the returned ID to cancel it before delivery. Enter the time as `YYYY-MM-DD HH:MM` in Japan time or as ISO 8601 with a `+09:00` offset.
+
+To register multiple reminders, get a CSV from `/reminder template`, fill it in, and attach it to `/reminder import`. Required columns are `datetime`, `channel_id`, and `content`; optional columns are `mention_users` and `mention_roles`. Mention columns accept member display names or Discord usernames, and role names. Separate multiple targets with `;`. Names are matched case-insensitively and exactly within the current server; missing or ambiguous matches are rejected. Discord IDs remain supported. The entire CSV is validated before anything is added, existing reminders are preserved, and target channels and mention targets must belong to the current server.
+
+For `/reminder add`, choose the user or role from Discord's selector; Discord passes its ID internally.
+
 ## Auxiliary GUI tools
 
-CSV editing features are provided through the integrated CSV editor. Start it from the repository root with Python or use the same integrated executable on Windows.
-
-### Server export JSON editor
-
-```powershell
-python Src/tools/server_export_editor/server_export_editor.py
-```
-
-Edit JSON files produced by `/server export`; this is a separate application from the integrated CSV editor. Click a list heading to open an Excel-style dropdown with ascending/descending sorting, value search, and checkbox-based multi-value filtering.
-On Windows, run [server_export_editor.exe](../release/tools/server_export_editor.exe), optionally passing a JSON file path to open.
-
-### Integrated CSV editor
+Configuration, CSV, and server-export JSON editing are combined in the Server Configuration Editor. Start it from the repository root with Python or use `release/tools/server_config_editor.exe` on Windows.
+### Server Configuration Editor
 
 ```powershell
-python Src/tools/csv_editor/csv_editor.py
+python Src/tools/server_config_editor/server_config_editor.py
 ```
 
-This is the single CSV editor application, with Config, Template, Server role, Member role, Channel, and Scenario tabs. Click a list column heading to open an Excel-style dropdown with ascending/descending sorting, value search, and checkbox-based multi-value filtering. Filters on multiple columns combine, and blank values can be selected. Double-click template CSV cells to edit them. Member-role CSV formats are detected from their column names and validated on save. A tab with unsaved changes is marked with `*`, and closing the app asks for confirmation.
+The application has Config, Template, Server role, Member role, Channel, Scenario, Reminder, and Server Export tabs. Click a list column heading to open an Excel-style dropdown with ascending/descending sorting, value search, and checkbox-based multi-value filtering. Filters on multiple columns combine, and blank values can be selected. Double-click template CSV cells to edit them. Member-role CSV formats are detected from their column names and validated on save. A tab with unsaved changes is marked with `*`, and closing the app asks for confirmation.
 
-The server-role tab can edit role names, colors, and permissions, and add or remove permission columns. The member-role tab can add or remove role columns. The channel tab can add or remove `role_N` and `user_N` columns. The Scenario tab opens a CSV or a folder of CSVs and edits step instructions, completion conditions, responses, and branches. Secret values such as the bot token are masked in the Config tab; restart the bot after saving settings.
+The server-role tab can edit role names, colors, and permissions, and add or remove permission columns. The member-role tab can add or remove role columns. The channel tab can add or remove `role_N` and `user_N` columns. The Scenario tab opens a CSV or a folder of CSVs and edits step instructions, completion conditions, responses, and branches. The Reminder tab can add, edit, and delete scheduled reminders and save the reminder JSON. The Server Export tab opens JSON produced by `/server export` and edits server roles, member roles, and channels. Secret values such as the bot token are masked in the Config tab.
 
-The Python version uses `Src/templates` and `Src/config/config.json` by default. The Windows [csv_editor.exe](../release/tools/csv_editor.exe) uses files under `release` by default. Use the Open button on the Config tab to select another settings file. Never expose the settings file or commit it to Git.
-On Windows, start [csv_editor.exe](../release/tools/csv_editor.exe).
+The Python version uses `Src/templates` and `Src/config` by default. The Windows [server_config_editor.exe](../release/tools/server_config_editor.exe) uses files under `release` by default. Use the Open button in a tab to select another file. Never expose the settings file or commit it to Git.
 
 ## Commands
 

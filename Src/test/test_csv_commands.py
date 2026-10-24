@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -11,7 +12,7 @@ from event.on_message.command.member import role_set as member_role_set
 from event.on_message.command.member import role_update as member_role_update
 from event.on_message.command.scenario import set as scenario_set
 from event.on_message.command.server import role_set as server_role_set
-from function.scenario.scenario_service import register_scenario_csv
+from function.scenario.scenario_service import advance_scenario, register_scenario_csv
 
 TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "release" / "tools" / "templates" / "set" / "input"
 
@@ -294,6 +295,51 @@ class ScenarioSetTests(CsvCommandFixture, CommonCsvCommandTests, unittest.Isolat
                 saved, _ = await self.call(message)
                 results = {r[-2] for r in parse(saved["data"])[1:]}
                 self.assertEqual(results, {"成功"})
+
+    async def test_team_match_winner_selects_other_team_as_loser(self):
+        template = (TEMPLATE_DIR / "team_match_scenario.csv").read_text(
+            encoding="utf-8-sig"
+        )
+        register_scenario_csv(template, self.definitions)
+        states_path = self.definitions.with_name("states.json")
+        definition_paths = (
+            self.definitions,
+            Path(__file__).resolve().parents[1]
+            / "config"
+            / "scenario_definitions.json",
+            TEMPLATE_DIR.parents[3] / "config" / "scenario_definitions.json",
+        )
+
+        for definitions_path in definition_paths:
+            for winner_reaction, loser_team in (("🅰️", "チームB"), ("🅱️", "チームA")):
+                for step in (4, 10, 16, 22):
+                    with self.subTest(
+                        definitions=definitions_path,
+                        step=step,
+                        winner=winner_reaction,
+                    ):
+                        states_path.write_text(
+                            json.dumps(
+                                {
+                                    "1": {
+                                        "scenario_id": "team_match",
+                                        "step": step,
+                                        "channel_id": 1,
+                                        "message_id": 42,
+                                    }
+                                }
+                            ),
+                            encoding="utf-8",
+                        )
+                        result = advance_scenario(
+                            1,
+                            winner_reaction,
+                            message_id=42,
+                            definitions_path=definitions_path,
+                            states_path=states_path,
+                        )
+
+                        self.assertIn(f"@{loser_team}（敗者）", result["instruction"])
 
 
 if __name__ == "__main__":

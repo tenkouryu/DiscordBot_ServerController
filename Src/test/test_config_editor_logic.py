@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from tools.csv_editor.config_editor.config_logic import (
+from tools.server_config_editor.config_editor.config_logic import (
     default_config_path,
     is_secret_key,
     load_config,
@@ -39,7 +39,7 @@ class ConfigLogicTest(unittest.TestCase):
         self.assertFalse(is_secret_key("name"))
 
     def test_default_path_for_frozen_release_executable(self):
-        executable = Path("C:/release/tools/csv_editor.exe")
+        executable = Path("C:/release/tools/server_config_editor.exe")
         with patch.object(sys, "frozen", True, create=True), patch.object(
             sys, "executable", str(executable)
         ):

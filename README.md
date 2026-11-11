@@ -4,5 +4,6 @@
 - [README_EN.md (English)](Document/README_EN.md)
 - [ARCHITECTURE_JP.md (日本語)](Document/ARCHITECTURE_JP.md)
 - [ARCHITECTURE_EN.md (English)](Document/ARCHITECTURE_EN.md)
+- [Minimal Discord bot template](template/README.md)
 - [LICENSE (MIT)](Document/licenses/LICENSE)
 - [第三者OSSライセンス](Document/licenses/THIRD_PARTY_LICENSES.md)

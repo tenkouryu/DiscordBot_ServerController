@@ -1,5 +1,5 @@
 import discord
-import function.discord.message.send_message as send_message
+import function.deck.decklist_handler as decklist_handler
 from function.scenario.scenario_service import (
     advance_scenario,
     get_scenario_wait_type,
@@ -10,7 +10,7 @@ from function.scenario.scenario_service import (
     Discordメッセージ受信イベントを処理する。
 
     on_message_main:
-        Bot自身のメッセージを除外し、シナリオ進行中の入力だけを処理する。
+        Bot自身のメッセージを除外し、シナリオ入力またはデッキリストを処理する。
 """
 
 async def on_message_main(
@@ -19,6 +19,9 @@ async def on_message_main(
 ) -> None:
     # メッセージ送信者がBotの場合は無視する。
     if message.author.bot:
+        return
+
+    if await decklist_handler.process_decklist_message(client, message):
         return
 
     if message.guild is not None:
